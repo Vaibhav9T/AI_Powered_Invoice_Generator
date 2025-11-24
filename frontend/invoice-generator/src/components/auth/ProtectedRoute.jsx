@@ -1,12 +1,13 @@
 import { Navigate, Outlet } from 'react-router-dom';
+import DashboardLayout from '../layout/DashboardLayout';
 
 const ProtectedRoute = ({ children }) => {
-    const isAthenticated = true;
+    const isAuthenticated = true;
     const loading = false;
     if(loading){
         return <div>Loading...</div>;
     }
-    if(!isAthenticated){
+    if(!isAuthenticated){
         return <Navigate to="/login" replace />;
     }
   return (
@@ -14,4 +15,4 @@ const ProtectedRoute = ({ children }) => {
   );
 };
 
-export default memo(ProtectedRoute);
+export default ProtectedRoute;

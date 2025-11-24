@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React from 'react';
 
 const ProfilePage = () => {
   return (
@@ -8,4 +8,4 @@ const ProfilePage = () => {
   );
 };
 
-export default memo(ProfilePage);
+export default ProfilePage;
