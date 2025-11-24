@@ -14,20 +14,20 @@ import AllInvoices from './pages/Invoices/AllInvoices';
 import CreateInvoice from './pages/Invoices/CreateInvoice';
 import InvoiceDetail from './pages/Invoices/InvoiceDetails';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+
 const App = () => {
   return (
     <div>
       <Router>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/profile" element={<ProfilePage />} /> */}
 
           {/*Protected Routes */}
             <Route path="/" element={<ProtectedRoute/>} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="invoices" element={<AllInvoices />} />
             <Route path="invoice/new" element={<CreateInvoice/>}/>
             <Route path="invoice/:id" element={<InvoiceDetail/>}/>

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React from 'react';
 
 const Signup = () => {
   return (
@@ -8,4 +8,4 @@ const Signup = () => {
   );
 };
 
-export default memo(Signup);
+export default Signup;

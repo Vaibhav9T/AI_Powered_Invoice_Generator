@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React from 'react';
 
 const AllInvoices = () => {
   return (
@@ -8,4 +8,4 @@ const AllInvoices = () => {
   );
 };
 
-export default memo(AllInvoices);
+export default AllInvoices;

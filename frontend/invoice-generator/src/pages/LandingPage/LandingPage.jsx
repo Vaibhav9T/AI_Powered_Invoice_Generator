@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React from 'react';
 
 const LandingPage = () => {
   return (
@@ -8,4 +8,4 @@ const LandingPage = () => {
   );
 };
 
-export default memo(LandingPage);
+export default LandingPage;

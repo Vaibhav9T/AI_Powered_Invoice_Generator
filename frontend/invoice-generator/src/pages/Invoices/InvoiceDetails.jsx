@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React from 'react';
 
 const InvoiceDetails = () => {
   return (
@@ -8,4 +8,4 @@ const InvoiceDetails = () => {
   );
 };
 
-export default memo(InvoiceDetails);
+export default InvoiceDetails;

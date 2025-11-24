@@ -1,12 +1,12 @@
-import { memo } from 'react';
+import React from 'react';
 
 const DashboardLayout = ({ children }) => {
   return (
-    <div>
-      <h2>DashboardLayout</h2>
-      {children}
+    <div>DashboardLayout
+      <div>{children}</div>
     </div>
+
   );
 };
 
-export default memo(DashboardLayout);
+export default DashboardLayout;
