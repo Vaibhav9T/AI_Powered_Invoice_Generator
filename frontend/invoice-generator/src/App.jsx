@@ -26,12 +26,13 @@ const App = () => {
           <Route path="/login" element={<Login />} />
 
           {/*Protected Routes */}
-            <Route path="/" element={<ProtectedRoute/>} />
+            <Route path="/" element={<ProtectedRoute/>} >
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="invoices" element={<AllInvoices />} />
             <Route path="invoice/new" element={<CreateInvoice/>}/>
             <Route path="invoice/:id" element={<InvoiceDetail/>}/>
             <Route path="profile" element={<ProfilePage/>}/>
+            </Route>
           {/*  */}
           <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
