@@ -1,4 +1,4 @@
-# AI-Powered Invoice Generator
+# AI-Powered Invoice Generator (InvoiceAI)
 
 [![version](frontend/invoice-generator/package.json)](frontend/invoice-generator/package.json) <!-- badge placeholder -->
 [![vite](frontend/invoice-generator/vite.config.js)](frontend/invoice-generator/vite.config.js)
