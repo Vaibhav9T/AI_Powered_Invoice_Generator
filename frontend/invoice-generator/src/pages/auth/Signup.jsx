@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff, FileText, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, FileText, CheckCircle, ArrowLeft } from 'lucide-react';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -70,6 +70,20 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       
+      {/* --- ADDED: Back Arrow Button --- */}
+      <div className="absolute top-6 left-6 md:top-8 md:left-8">
+        <Link 
+          to="/" 
+          className="flex items-center gap-2 text-slate-500 hover:text-blue-900 transition-colors group"
+        >
+          <div className="p-2 bg-white border border-gray-200 rounded-full group-hover:border-blue-200 group-hover:bg-blue-50 transition-all">
+            <ArrowLeft size={20} className="text-slate-600 group-hover:text-blue-900" />
+          </div>
+          <span className="font-medium hidden sm:inline text-sm">Back to Home</span>
+        </Link>
+      </div>
+      {/* -------------------------------- */}
+
       {/* Top Logo Icon */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
         <div className="mx-auto h-12 w-12 bg-blue-900 rounded-lg flex items-center justify-center mb-4 shadow-lg shadow-blue-900/20">
