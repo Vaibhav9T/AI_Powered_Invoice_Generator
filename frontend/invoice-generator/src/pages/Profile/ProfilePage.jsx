@@ -2,8 +2,7 @@ import React from 'react';
 
 const ProfilePage = () => {
   return (
-    <div>
-      <h2>ProfilePage</h2>
+    <div className='bg-[#0a2540] '>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { useState, useEffect, use } from "react";
 import { Link } from "react-router-dom";
 import {FileText, Menu} from 'lucide-react';
+import ProfileDropdown from "../layout/ProfileDropdown";
 
 const Header = () => {
 const [isScrolled, setIsScrolled] = useState(false);
@@ -17,6 +18,16 @@ useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
 }, []);
+
+ // Helper function for smooth scrolling
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMenuOpen(false); // Close mobile menu after clicking
+  };
+
   return (
     <header className="fixed w-full top-0 z-50 bg-gray-50/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -43,19 +54,45 @@ useEffect(() => {
 
           {/* 2. Navigation Links (Hidden on Mobile) */}
           <nav className="hidden md:flex space-x-10">
-            {['Features', 'Testimonials', 'FAQ'].map((item) => (
-              <Link
-                key={item}
-                to={`/${item.toLowerCase()}`}
-                className="text-sm font-medium text-slate-600 hover:text-blue-900 transition-colors"
-              >
-                {item}
-              </Link>
-            ))}
+            {['Features', 'Testimonials', 'About'].map((item) => {
+              if (item === 'Features') {
+                return (
+                  <button
+                    key={item}
+                    onClick={() => scrollToSection('Features')}
+                    className="text-sm font-medium text-slate-600 hover:text-blue-900 transition-colors cursor-pointer bg-transparent border-none"
+                  >
+                    {item}
+                  </button>
+                );
+              }
+              return (
+                <Link
+                  key={item}
+                  to={`/${item.toLowerCase()}`}
+                  className="text-sm font-medium text-slate-600 hover:text-blue-900 transition-colors"
+                >
+                  {item}
+                </Link>
+              );
+            })}
           </nav>
 
+            
           {/* 3. Action Buttons */}
           <div className="hidden md:flex items-center gap-4">
+            {isAunthenticated ?( <ProfileDropdown
+            isOpen={profileDropdownOpen}
+              onToggle={(e) => {
+                e.stopPropagation();
+                setProfileDropdownOpen(!profileDropdownOpen)}
+              }
+                avatar={user?.avatar || ''}
+                companyName={user?.name || 'User'}
+                email={user?.email || ''}
+                onLogout={logout}
+            />
+          ) : ( <>
             <Link 
               to="/login" 
               className="px-6 py-2.5 text-sm font-semibold text-slate-700 bg-slate-200/50 hover:bg-slate-200 rounded-lg transition-colors"
@@ -66,8 +103,9 @@ useEffect(() => {
               to="/signup" 
               className="px-6 py-2.5 text-sm font-semibold text-white bg-blue-900 hover:bg-blue-800 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5"
             >
-              Get Started
+              Sign Up
             </Link>
+            </> )}
           </div>
 
           {/* Mobile Menu Button */}
