@@ -6,7 +6,7 @@ import ProfileDropdown from "../layout/ProfileDropdown";
 const Header = () => {
 const [isScrolled, setIsScrolled] = useState(false);
 const [isMenuOpen, setIsMenuOpen] = useState(false);
-const isAunthenticated = false; // Replace with actual authentication logic
+const isAunthenticated = true; // Replace with actual authentication logic
 const user= {name:"Vaibhav", email:"vaibhavtembukadea09@gmail,com"}
 const logout=()=>{}
 const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -81,8 +81,9 @@ useEffect(() => {
             
           {/* 3. Action Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            {isAunthenticated ?( <ProfileDropdown
-            isOpen={profileDropdownOpen}
+            {isAunthenticated ?( 
+              <ProfileDropdown
+              isOpen={profileDropdownOpen}
               onToggle={(e) => {
                 e.stopPropagation();
                 setProfileDropdownOpen(!profileDropdownOpen)}
