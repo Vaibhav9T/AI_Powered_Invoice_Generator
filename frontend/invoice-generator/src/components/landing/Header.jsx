@@ -6,7 +6,7 @@ import ProfileDropdown from "../layout/ProfileDropdown";
 const Header = () => {
 const [isScrolled, setIsScrolled] = useState(false);
 const [isMenuOpen, setIsMenuOpen] = useState(false);
-const isAunthenticated = false; // Replace with actual authentication logic
+const isAunthenticated = true; // Replace with actual authentication logic
 const user= {name:"Vaibhav", email:"vaibhavtembukadea09@gmail,com"}
 const logout=()=>{}
 const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -130,21 +130,35 @@ useEffect(() => {
         <div className="md:hidden bg-white border-t border-gray-100 shadow-xl absolute w-full">
           <div className="px-4 pt-2 pb-6 space-y-2">
 
-            {['Features', 'Testomonials', 'FAQ'].map((item) => (
-
   
-              <Link
-                key={item}
-                to={`/${item.toLowerCase()}`}
-                className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-900 hover:bg-gray-50"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item}
-              </Link>
-                
-            )
-            )}
+              {['Features', 'Testimonials', 'FAQ'].map((item) => {
+                if (item === 'Features') {
+                  return (
+                    <button
+                      key={item}
+                      onClick={() => scrollToSection('Features')}
+                      className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-900 hover:bg-gray-50 bg-transparent cursor-pointer border-none"
+                    >
+                      {item}
+                    </button>
+                  );
+                }
+                return (
+                  <Link
+                    key={item}
+                    to={`/${item.toLowerCase()}`}
+                    className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-900 hover:bg-gray-50"
+                  >
+                    {item}
+                  </Link>
+                );
+              })}
 
+              
+
+             {isAunthenticated ?(<div className="mt-4 flex flex-col gap-3"><Link to="/Dashboard" className="w-full text-center py-3 rounded-lg bg-blue-900 font-semibold text-white">
+                Go to Dashboard
+              </Link></div>):
 
             <div className="mt-4 flex flex-col gap-3">
               <Link to="/login" className="w-full text-center py-3 rounded-lg bg-slate-100 font-semibold text-slate-700">
@@ -153,7 +167,7 @@ useEffect(() => {
               <Link to="/signup" className="w-full text-center py-3 rounded-lg bg-blue-900 font-semibold text-white">
                 Get Started
               </Link>
-            </div>
+            </div>}
           </div>
         </div>
       )}
