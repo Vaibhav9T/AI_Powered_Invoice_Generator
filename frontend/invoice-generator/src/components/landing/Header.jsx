@@ -1,12 +1,12 @@
 import { useState, useEffect, use } from "react";
 import { Link } from "react-router-dom";
-import {FileText, Menu} from 'lucide-react';
+import {FileText, Menu, X} from 'lucide-react';
 import ProfileDropdown from "../layout/ProfileDropdown";
 
 const Header = () => {
 const [isScrolled, setIsScrolled] = useState(false);
 const [isMenuOpen, setIsMenuOpen] = useState(false);
-const isAunthenticated = true; // Replace with actual authentication logic
+const isAunthenticated = false; // Replace with actual authentication logic
 const user= {name:"Vaibhav", email:"vaibhavtembukadea09@gmail,com"}
 const logout=()=>{}
 const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -29,12 +29,14 @@ useEffect(() => {
   };
 
   return (
-    <header className="fixed w-full top-0 z-50 bg-gray-50/80 backdrop-blur-md border-b border-gray-100">
+    <header className={`fixed w-full top-0 z-50 bg-gray-50/80 backdrop-blur-md border-b border-gray-100 ${
+    isScrolled ? "bg-white/95  backdrop:blur-sm shadow-lg" : "bg-white/0" } `}>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           
           {/* 1. Logo Section */}
-          <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer">
+          <div className="shrink-0 flex items-center gap-2 cursor-pointer">
             {/* Custom Icon to match the blue cone/mountain in your image */}
             <div className="w-8 h-8 bg-blue-900 rounded-lg flex items-center justify-center">
               <svg 
@@ -54,7 +56,7 @@ useEffect(() => {
 
           {/* 2. Navigation Links (Hidden on Mobile) */}
           <nav className="hidden md:flex space-x-10">
-            {['Features', 'Testimonials', 'About'].map((item) => {
+            {['Features', 'Testimonials', 'FAQ'].map((item) => {
               if (item === 'Features') {
                 return (
                   <button
@@ -109,6 +111,8 @@ useEffect(() => {
             </> )}
           </div>
 
+          
+
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             <button 
@@ -125,7 +129,10 @@ useEffect(() => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 shadow-xl absolute w-full">
           <div className="px-4 pt-2 pb-6 space-y-2">
-            {['Features', 'Pricing', 'About'].map((item) => (
+
+            {['Features', 'Testomonials', 'FAQ'].map((item) => (
+
+  
               <Link
                 key={item}
                 to={`/${item.toLowerCase()}`}
@@ -134,7 +141,11 @@ useEffect(() => {
               >
                 {item}
               </Link>
-            ))}
+                
+            )
+            )}
+
+
             <div className="mt-4 flex flex-col gap-3">
               <Link to="/login" className="w-full text-center py-3 rounded-lg bg-slate-100 font-semibold text-slate-700">
                 Login
