@@ -13,6 +13,7 @@ import {
 
 import Header from '../../components/landing/Header';
 import Features from '../../components/landing/Features';
+import Testimonials from '../../components/landing/Testimonials';
 import Hero from '../../components/landing/Hero';
 
 const LandingPage = () => {
@@ -41,6 +42,8 @@ const LandingPage = () => {
         </section>
 
     <Features/>
+    <Testimonials/>
+    {/* <Testimonials/> */}
         {/* Bottom CTA Section */}
         <section className="text-center py-20 px-4">
           <h2 className="text-3xl font-bold text-slate-900 mb-4">
