@@ -15,6 +15,7 @@ import Header from '../../components/landing/Header';
 import Features from '../../components/landing/Features';
 import Testimonials from '../../components/landing/Testimonials';
 import Hero from '../../components/landing/Hero';
+import Faq from '../../components/landing/Faqs';
 
 const LandingPage = () => {
   return (
@@ -43,6 +44,8 @@ const LandingPage = () => {
 
     <Features/>
     <Testimonials/>
+    <Faq/>
+
     {/* <Testimonials/> */}
         {/* Bottom CTA Section */}
         <section className="text-center py-20 px-4">

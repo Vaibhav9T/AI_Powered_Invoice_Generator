@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-@theme{
-  --fontdisplay: 'Urbanist', sans-serif;
-  --breakpont-3xl: 1920px;
+:root {
+  /*--font-display: 'poppins', sans-serif;*/
+  --breakpoint-3xl: 1920px;
   --color-primary: #FF9324;
 }
 
@@ -14,5 +15,6 @@
   }
   body{
     background: #fcfbfc;
+    font-family: 'Inter', sans-serif;
   }
 }
