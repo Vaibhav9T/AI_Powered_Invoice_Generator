@@ -52,3 +52,36 @@ export const TESTIMONIALS =[
     },
 
 ];
+
+export const FAQS = [
+    {
+        question: "How does the AI invoice creation work?",
+        answer:
+        "Our AI analyzes the text, email, or receipt you provide and extracts the relevant information to generate a professional invoice."
+    },
+
+    {
+        question: "Is my data secure?",
+        answer:
+        "Yes, we take data security seriously. All your data is encrypted and stored securely."
+    },
+
+    {
+        question: "Is there free version available?",
+        answer:
+        "Yes, we offer a free version with basic features. You can upgrade to access premium features."
+    },
+
+    {
+        question: "Can I customize the invoice templates?",
+        answer:
+        "Yes, we offer a variety of customizable invoice templates to suit your brand and style."
+    },
+
+    {
+        question: "Can other info be added to the invoice?",
+        answer:
+        "Yes, you can add additional information such as payment terms, notes, and logos to your invoices."
+    }
+
+];   

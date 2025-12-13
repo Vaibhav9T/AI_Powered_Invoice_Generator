@@ -6,7 +6,7 @@ import ProfileDropdown from "../layout/ProfileDropdown";
 const Header = () => {
 const [isScrolled, setIsScrolled] = useState(false);
 const [isMenuOpen, setIsMenuOpen] = useState(false);
-const isAunthenticated = true; // Replace with actual authentication logic
+const isAunthenticated = false; // Replace with actual authentication logic
 const user= {name:"Vaibhav", email:"vaibhavtembukadea09@gmail,com"}
 const logout=()=>{}
 const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -57,6 +57,7 @@ useEffect(() => {
           {/* 2. Navigation Links (Hidden on Mobile) */}
           <nav className="hidden md:flex space-x-10">
             {['Features', 'Testimonials', 'FAQ'].map((item) => {
+
               if (item === 'Features') {
                 return (
                   <button
@@ -79,16 +80,26 @@ useEffect(() => {
                   </button>
                 );
               }
-
-              return (
-                <Link
-                  key={item}
-                  to={`/${item.toLowerCase()}`}
-                  className="text-md font-medium text-slate-600 hover:text-blue-900 transition-colors"
-                >
-                  {item}
-                </Link>
-              );
+               else if(item=== 'FAQ'){
+                  return (
+                  <button
+                    key={item}
+                    onClick={() => scrollToSection('Faq')}
+                    className="text-md font-medium text-slate-600 hover:text-blue-900 transition-colors cursor-pointer bg-transparent border-none"
+                  >
+                    {item}
+                  </button>
+                );
+              }
+              // return (
+              //   <Link
+              //     key={item}
+              //     to={`/${item.toLowerCase()}`}
+              //     className="text-md font-medium text-slate-600 hover:text-blue-900 transition-colors"
+              //   >
+              //     {item}
+              //   </Link>
+              // );
             })}
           </nav>
 
