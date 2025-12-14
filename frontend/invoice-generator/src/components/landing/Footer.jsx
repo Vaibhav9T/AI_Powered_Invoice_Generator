@@ -33,9 +33,9 @@ const Footer = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                     <div className="space-y-4 md:col-span-2 lg:col-span-1">
-                    <Link to="/" className="flex items-center space-x-2 mb-6">
-                    <div className="w-8 jh-8 bg-blue-950 rounded-md flex items-center justify-center">
-                    {/* <FileText className="" /> */}
+                    <Link to="/LandingPage" className="flex items-center space-x-2 mb-6">
+                    <div className="w-8 jh-8 bg-blue-950 rounded-md flex items-center justify-center" >
+                    
                     <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                     <svg 
                         width="16" 
@@ -58,13 +58,13 @@ const Footer = () => {
                     <h3 className="text-base font-semibold mb-4">Product</h3>
                     <ul className="space-y-2">
                     <li>
-                    <FooterLink href="#features">Features</FooterLink>
+                    <FooterLink href="#Features">Features</FooterLink>
                     </li>
                     <li>
-                        <FooterLink href="#testimonials">Testimonials</FooterLink>
+                        <FooterLink href="#Testimonials">Testimonials</FooterLink>
                     </li>
                     <li>
-                    <FooterLink href="#faq">FAQ</FooterLink>
+                    <FooterLink href="#Faq">FAQ</FooterLink>
                     </li>
                     </ul>
                     </div>
