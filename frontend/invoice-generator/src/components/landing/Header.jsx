@@ -34,7 +34,7 @@ useEffect(() => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          
+          <Link to="/LandingPage" className="flex items-center space-x-2">
           {/* 1. Logo Section */}
           <div className="shrink-0 flex items-center gap-2 cursor-pointer">
             {/* Custom Icon to match the blue cone/mountain in your image */}
@@ -53,7 +53,7 @@ useEffect(() => {
               InvoiceAI
             </span>
           </div>
-
+        </Link>
           {/* 2. Navigation Links (Hidden on Mobile) */}
           <nav className="hidden md:flex space-x-10">
             {['Features', 'Testimonials', 'FAQ'].map((item) => {
