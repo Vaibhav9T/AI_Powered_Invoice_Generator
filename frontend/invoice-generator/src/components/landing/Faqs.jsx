@@ -6,11 +6,11 @@ import React, {useState} from 'react';
 const FaqItem = ({ faq, isOpen, onClick }) => (
         < div className="border border-gray-200 rounded-xl overflow-hidden">
         <button onClick={onClick} className="w-full flex items-center justify-between p-6 bg-white hover:bg-gray-50 cursor-pointer trasition-colors duration-200">
-        <span className="text-lg font-mediuum text-gray-900 pr-4 text-left">{faq.question}</span>
-        <ChevronDown className={`w-6 h-6 text-gray-400 transition-transform duration-300 ${ isOpen ? 'transform rotate-180' : ''}`} />
+        <span className="text-lg font-mediuum text-gray-900 pr-4 text-left ">{faq.question}</span>
+        <ChevronDown className={`w-6 h-6 text-gray-400 transition-transform duration-300  ${ isOpen ? 'transform rotate-180' : ''}`} />
         </button>
         {isOpen && (
-        <div className="px-6 pb-6 text-gray-600 leading-relaxed border-t border-gray-100 ">
+        <div className="px-6 pb-6 text-gray-600 leading-relaxed border-t pt-5 border-gray-100">
         {faq.answer}
         </div>
         )}
@@ -34,9 +34,9 @@ const FAQ = () => {
                 Everything you know about InvoiceAI
             </p>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-5 ">
                 {FAQS.map((faq, index) => (
-                    <FaqItem key={index} faq={faq} isOpen={activeIndex === index} onClick={() => handleClick(index)} />
+                    <FaqItem key={index} faq={faq} isOpen={activeIndex === index} onClick={() => handleClick(index)}  />
                 ))}
         
             </div>
