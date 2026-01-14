@@ -1,8 +1,5 @@
 # AI-Powered Invoice Generator (InvoiceAI)
 
-[![version](frontend/invoice-generator/package.json)](frontend/invoice-generator/package.json) <!-- badge placeholder -->
-[![vite](frontend/invoice-generator/vite.config.js)](frontend/invoice-generator/vite.config.js)
-
 A minimal React + Vite frontend for an AI-powered invoice generator. This repository contains a frontend scaffold (React + Vite + Tailwind) and a placeholder backend directory for server/API code.
 
 Why this project exists
