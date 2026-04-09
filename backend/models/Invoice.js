@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const itemSchema = new mongoose.Schema({
     name: {type: String, require: true},
@@ -68,4 +68,6 @@ const invoiceSchema = new mongoose.Schema({
     {Timestamp:true}
 );
 
-module.export = mongoose.model("Invoice", invoiceSchema);
+const Invoice = mongoose.model("Invoice", invoiceSchema);
+
+export default Invoice;

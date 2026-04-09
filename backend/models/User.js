@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -20,23 +20,24 @@ const userSchema = new mongoose.Schema({
     },
     businessName: { type: String, default: '' },
     address: { type: String, default: '' },
-    phone: {type: String, default: '' },
+    phone: { type: String, default: '' },
 }, { timestamps: true });
 
 
-// Hash password before saving
-userSchema.pre("save", async function (next) {
-if (!this. isModified("password")) return next();
-const salt = await bcrypt.genSalt(10);
-this.password = await bcrypt.hash(this.password, salt);
-next();
+// 1. Modern Async pre-save hook (No 'next' required!)
+userSchema.pre("save", async function () {
+    // If password is not modified, exit the function early
+    if (!this.isModified("password")) return;
+    
+    // Otherwise, hash it
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
 });
 
 
-// Method to compare password
+// 2. Method to compare password (fixed spacing typo)
 userSchema.methods.matchPassword = async function (enteredPassword) {
-return await bcrypt. compare(enteredPassword, this.password);
-
+    return await bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);
