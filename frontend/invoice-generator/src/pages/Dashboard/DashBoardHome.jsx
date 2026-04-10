@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FileText, DollarSign } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInstance';
 import AIInsights from '../../components/AIInsights.jsx';
+import { API_PATHS } from '../../utils/apiPaths.js';
 const DashboardHome = () => {
   const [recentInvoices, setRecentInvoices] = useState([]);
   const [stats, setStats] = useState({
@@ -18,7 +19,7 @@ const DashboardHome = () => {
   const fetchDashboardData = async () => {
     try {
       // Fetch all invoices for the logged-in user
-      const response = await axiosInstance.get('/api/invoices');
+      const response = await axiosInstance.get(API_PATHS.INVOICE_API.GET_ALL);
       const allInvoices = response.data;
       
       // Get the 5 most recent invoices for the table
