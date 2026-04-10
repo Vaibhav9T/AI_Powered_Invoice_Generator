@@ -8,7 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import LandingPage from './pages/LandingPage/LandingPage';
 import Signup from './pages/auth/Signup';
 import Login from './pages/auth/Login';
-import Dashboard from './pages/Dashboard/Dashboard';
+import Dashboard from './pages/Dashboard/Dashboard.jsx';
 import ProfilePage from './pages/Profile/ProfilePage';
 import AllInvoices from './pages/Invoices/AllInvoices';
 import CreateInvoice from './pages/Invoices/CreateInvoice';
