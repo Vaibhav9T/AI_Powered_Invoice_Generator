@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { FileText, DollarSign } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInstance';
 import AIInsights from '../../components/AIInsights.jsx';
+import { API_PATHS } from '../../utils/apiPaths.js';
+
 const DashboardHome = () => {
   const [recentInvoices, setRecentInvoices] = useState([]);
   const [stats, setStats] = useState({
@@ -18,7 +20,7 @@ const DashboardHome = () => {
   const fetchDashboardData = async () => {
     try {
       // Fetch all invoices for the logged-in user
-      const response = await axiosInstance.get('/api/invoices');
+      const response = await axiosInstance.get(API_PATHS.INVOICE_API.GET_ALL);
       const allInvoices = response.data;
       
       // Get the 5 most recent invoices for the table
@@ -30,9 +32,9 @@ const DashboardHome = () => {
 
       allInvoices.forEach(invoice => {
         if (invoice.status === 'Paid') {
-          paid += invoice.total;
+          paid += invoice.total || 0;
         } else {
-          unpaid += invoice.total;
+          unpaid += invoice.total || 0;
         }
       });
 
@@ -71,7 +73,7 @@ const DashboardHome = () => {
           </div>
           <div>
             <p className="text-sm font-medium text-slate-500 mb-0.5">Total Paid</p>
-            <h3 className="text-2xl font-bold text-slate-800">{stats.totalPaid.toFixed(2)}</h3>
+            <h3 className="text-2xl font-bold text-slate-800">${stats.totalPaid.toFixed(2)}</h3>
           </div>
         </div>
 
@@ -82,11 +84,13 @@ const DashboardHome = () => {
           </div>
           <div>
             <p className="text-sm font-medium text-slate-500 mb-0.5">Total Unpaid</p>
-            <h3 className="text-2xl font-bold text-slate-800">{stats.totalUnpaid.toFixed(2)}</h3>
+            <h3 className="text-2xl font-bold text-slate-800">${stats.totalUnpaid.toFixed(2)}</h3>
           </div>
         </div>
       </div>
-        <AIInsights />
+
+      <AIInsights invoices={recentInvoices} />
+
       {/* ================= RECENT INVOICES TABLE ================= */}
       <div className="bg-[#e9ecef] border border-gray-200/60 rounded-xl shadow-sm overflow-hidden mt-6">
         
@@ -118,11 +122,28 @@ const DashboardHome = () => {
                 </tr>
               ) : (
                 recentInvoices.map((invoice) => {
-                  // Safely format the client name and date
-                  const clientName = invoice.billTo ? invoice.billTo.split('\n')[0] : 'Unknown Client';
-                  const formattedDate = new Date(invoice.dueDate).toLocaleDateString('en-US', { 
-                    month: 'short', day: 'numeric', year: 'numeric' 
-                  });
+                  
+                  // --- BULLETPROOF CLIENT EXTRACTION ---
+                  let clientName = 'Unknown Client';
+                  if (typeof invoice.billTo === 'string' && invoice.billTo.trim() !== '') {
+                    clientName = invoice.billTo.split('\n')[0];
+                  } else if (invoice.billTo && invoice.billTo.clientName) {
+                    clientName = invoice.billTo.clientName; 
+                  }
+
+                  // --- BULLETPROOF DATE EXTRACTION ---
+                  let formattedDate = 'Not set';
+                  if (invoice.dueDate) {
+                    const d = new Date(invoice.dueDate);
+                    if (!isNaN(d.getTime()) && d.getFullYear() > 1970) {
+                      formattedDate = d.toLocaleDateString('en-US', { 
+                        month: 'short', day: 'numeric', year: 'numeric' 
+                      });
+                    }
+                  }
+
+                  // Safe amount fallback
+                  const safeTotal = invoice.total || 0;
 
                   return (
                     <tr key={invoice._id} className="hover:bg-gray-200/30 transition-colors">
@@ -131,7 +152,7 @@ const DashboardHome = () => {
                         <div className="text-xs text-slate-400 mt-0.5">#{invoice.invoiceNumber || 'INV-000'}</div>
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-slate-800">
-                        ${invoice.total.toFixed(2)}
+                        ${safeTotal.toFixed(2)}
                       </td>
                       <td className="px-6 py-4">
                         {invoice.status === 'Paid' ? (
@@ -145,7 +166,7 @@ const DashboardHome = () => {
                         )}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-500">
-                        {formattedDate === 'Invalid Date' ? 'Not set' : formattedDate}
+                        {formattedDate}
                       </td>
                     </tr>
                   );

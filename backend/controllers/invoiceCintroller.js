@@ -173,4 +173,3 @@ export const deleteInvoice = async (req, res) => {
     }
 };
 
-// IMPORTANT: Do NOT add `export default Invoice;` here at the bottom!
