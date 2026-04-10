@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useState } from 'react';
 import { API_PATHS } from '../../utils/apiPaths';
 import axiosInstance from '../../utils/axiosInstance';
+import { validateEmail, validatePassword } from '../../utils/helper';
 
 const Login = () => {
   const { login } = useAuth();
@@ -77,19 +78,6 @@ const Login = () => {
       setIsLoading(false);
     }
     };
-
-  const validatePassword = (password) => {
-    if (!password) return "Password is required";
-    if (password.length < 6) return "Password must be at least 6 characters";
-    return "";
-    };
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) return "Email is required";
-    if (!emailRegex.test(email)) return "Please enter a valid email address";
-    return "";
-
-  };
 
   return (
     // Main container: Light gray background, centered content

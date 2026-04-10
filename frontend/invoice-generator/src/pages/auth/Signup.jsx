@@ -1,28 +1,107 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, EyeOff, FileText, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, FileText, ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
+import { API_PATHS } from '../../utils/apiPaths';
+import axiosInstance from '../../utils/axiosInstance';
+import { validateEmail, validatePassword } from '../../utils/helper';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
+    confirmPassword: '',
   });
 
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Validation Logic
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(''); // Fixed typo
+
+  const navigate = useNavigate();
+
+  const [fieldErrors, setFieldErrors] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const [touched, setTouched] = useState({
+    fullName: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
+
+  // Validation functions
+  const validateName = (name) => {
+    if (!name.trim()) {
+      return 'Name is required';
+    }
+    return '';
+  };
+
+  const validateConfirmPassword = (confirmPassword, password) => {
+    if (!confirmPassword.trim()) {
+      return 'Please confirm your password';
+    }
+    if (confirmPassword !== password) {
+      return 'Passwords do not match';
+    }
+    return '';
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    
+    // Clear field-specific error when user starts typing
+    setFieldErrors({ ...fieldErrors, [name]: '' });
+    // Mark field as touched
+    setTouched({ ...touched, [name]: true }); 
+    
+    // Validate the specific field on change
+    let errorMsg = '';
+    if (name === 'fullName') {
+      errorMsg = validateName(value);
+    } else if (name === 'email') {
+      errorMsg = validateEmail(value);
+    } else if (name === 'password') {
+      errorMsg = validatePassword(value);
+    } else if (name === 'confirmPassword') {
+      errorMsg = validateConfirmPassword(value, formData.password);
+    }
+    setFieldErrors({ ...fieldErrors, [name]: errorMsg });
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setTouched({ ...touched, [name]: true });
+    
+    let errorMsg = '';
+    if (name === 'fullName') {
+      errorMsg = validateName(value);
+    } else if (name === 'email') {
+      errorMsg = validateEmail(value);
+    } else if (name === 'password') {
+      errorMsg = validatePassword(value);
+    } else if (name === 'confirmPassword') {
+      errorMsg = validateConfirmPassword(value, formData.password);
+    }
+    setFieldErrors({ ...fieldErrors, [name]: errorMsg });
+  };
+
   const validate = () => {
     let tempErrors = {};
     
-    // Name Validation
     if (!formData.fullName.trim()) {
-      tempErrors.fullName = "Full name is required";
+      tempErrors.fullName = "Name is required";
     }
 
-    // Email Validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) {
       tempErrors.email = "Email address is required";
@@ -30,7 +109,6 @@ const Signup = () => {
       tempErrors.email = "Please enter a valid email address";
     }
 
-    // Password Validation
     if (!formData.password) {
       tempErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
@@ -41,36 +119,41 @@ const Signup = () => {
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
-    }
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    if (validate()) {
-      // Simulation of API call
-      console.log('Form Submitted Successfully:', formData);
-      // Here you would typically call your register API
-      setTimeout(() => {
-        alert("Account created successfully!");
-        setIsSubmitting(false);
-      }, 1000);
-    } else {
-      setIsSubmitting(false);
+    if (!validate()) {
+      return;
     }
+    
+    setIsSubmitting(true);
+    setError('');
+    setSuccess('');
+
+    // 🔥 THE FIX: Map frontend formData to match backend expectations exactly
+    const payload = {
+        name: formData.fullName, 
+        email: formData.email,
+        password: formData.password
+    };
+
+    axiosInstance.post(API_PATHS.AUTH_API.REGISTER, payload)
+      .then((response) => {
+        setSuccess('Account created successfully! Redirecting to login...');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      })
+      .catch((err) => {
+        setError(err.response?.data?.message || 'Signup failed. Please try again.');
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       
-      {/* --- ADDED: Back Arrow Button --- */}
       <div className="absolute top-6 left-6 md:top-8 md:left-8">
         <Link 
           to="/" 
@@ -82,9 +165,7 @@ const Signup = () => {
           <span className="font-medium hidden sm:inline text-sm">Back to Home</span>
         </Link>
       </div>
-      {/* -------------------------------- */}
 
-      {/* Top Logo Icon */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
         <div className="mx-auto h-12 w-12 bg-blue-900 rounded-lg flex items-center justify-center mb-4 shadow-lg shadow-blue-900/20">
           <FileText className="h-6 w-6 text-white" />
@@ -103,7 +184,6 @@ const Signup = () => {
             </p>
           </div>
 
-          {/* Social Sign Up Section */}
           <div className="grid grid-cols-2 gap-3 mb-6">
             <button className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-gray-50 transition-colors">
               <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
@@ -149,14 +229,15 @@ const Signup = () => {
                   type="text"
                   required
                   value={formData.fullName}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
                   className={`appearance-none block w-full px-3 py-2.5 border ${
-                    errors.fullName ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-900'
+                    fieldErrors.fullName ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-900'
                   } rounded-lg bg-gray-50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent sm:text-sm transition-all`}
                   placeholder="Enter your full name"
                 />
               </div>
-              {errors.fullName && <p className="mt-1 text-xs text-red-600">{errors.fullName}</p>}
+              {fieldErrors.fullName && <p className="mt-1 text-xs text-red-600">{fieldErrors.fullName}</p>}
             </div>
 
             {/* Email Field */}
@@ -171,14 +252,15 @@ const Signup = () => {
                   type="email"
                   required
                   value={formData.email}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
                   className={`appearance-none block w-full px-3 py-2.5 border ${
-                    errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-900'
+                    fieldErrors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-900'
                   } rounded-lg bg-gray-50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent sm:text-sm transition-all`}
                   placeholder="you@company.com"
                 />
               </div>
-              {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
+              {fieldErrors.email && <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>}
             </div>
 
             {/* Password Field */}
@@ -193,11 +275,47 @@ const Signup = () => {
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={formData.password}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
                   className={`appearance-none block w-full px-3 py-2.5 border ${
-                    errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-900'
+                    fieldErrors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-900'
                   } rounded-lg bg-gray-50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent sm:text-sm pr-10 transition-all`}
                   placeholder="Enter your password"
+                />
+
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" aria-hidden="true" />
+                  ) : (
+                    <Eye className="h-5 w-5" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
+              {fieldErrors.password && <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>}
+            </div>
+
+            {/* Confirm Password Field */}
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-1">
+                Confirm Password
+              </label>
+              <div className="relative rounded-md shadow-sm">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  className={`appearance-none block w-full px-3 py-2.5 border ${
+                    fieldErrors.confirmPassword ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-900'
+                  } rounded-lg bg-gray-50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent sm:text-sm pr-10 transition-all`}
+                  placeholder="Re-enter your password"
                 />
                 <button
                   type="button"
@@ -211,8 +329,11 @@ const Signup = () => {
                   )}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
+              {fieldErrors.confirmPassword && <p className="mt-1 text-xs text-red-600">{fieldErrors.confirmPassword}</p>}
             </div>
+
+            {error && <p className="text-sm text-red-600 text-center font-medium">{error}</p>}
+            {success && <p className="text-sm text-green-600 text-center font-medium">{success}</p>}
 
             {/* Submit Button */}
             <div>
@@ -226,7 +347,6 @@ const Signup = () => {
             </div>
           </form>
 
-          {/* Footer Terms */}
           <div className="mt-6 text-center">
             <p className="text-xs text-slate-500">
               By creating an account, you agree to our{' '}
