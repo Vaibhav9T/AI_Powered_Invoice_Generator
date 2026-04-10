@@ -2,14 +2,17 @@ import { useState, useEffect, use } from "react";
 import { Link } from "react-router-dom";
 import {FileText, Menu, X} from 'lucide-react';
 import ProfileDropdown from "../layout/ProfileDropdown";
+import { useAuth } from "../../context/AuthContext";
 
 const Header = () => {
 const [isScrolled, setIsScrolled] = useState(false);
 const [isMenuOpen, setIsMenuOpen] = useState(false);
 const isAunthenticated = false; // Replace with actual authentication logic
-const user= {name:"Vaibhav", email:"vaibhavtembukadea09@gmail,com"}
-const logout=()=>{}
+// const user= {name:"Vaibhav", email:"vaibhavtembukadea09@gmail,com"}
+// const logout=()=>{}
 const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+
+const { isAuthenticated, user, logout } = useAuth();
 
 useEffect(() => {
     const handleScroll = () => {

@@ -8,13 +8,14 @@ import { Toaster } from 'react-hot-toast';
 import LandingPage from './pages/LandingPage/LandingPage';
 import Signup from './pages/auth/Signup';
 import Login from './pages/auth/Login';
-import Dashboard from './pages/Dashboard/Dashboard';
+import Dashboard from './pages/Dashboard/Dashboard'; // Note: Removed .jsx extension for cleaner imports
 import ProfilePage from './pages/Profile/ProfilePage';
 import AllInvoices from './pages/Invoices/AllInvoices';
 import CreateInvoice from './pages/Invoices/CreateInvoice';
 import InvoiceDetail from './pages/Invoices/InvoiceDetails';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import DashboardHome from './pages/Dashboard/DashBoardHome';
 
 const App = () => {
   return (
@@ -26,26 +27,33 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
 
-          {/*Protected Routes */}
-            <Route path="/" element={<ProtectedRoute/>} >
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="invoices" element={<AllInvoices />} />
-            <Route path="invoice/new" element={<CreateInvoice/>}/>
-            <Route path="invoice/:id" element={<InvoiceDetail/>}/>
-            <Route path="profile" element={<ProfilePage/>}/>
-            </Route>
-          {/*  */}
+          {/* Protected Routes */}
+          <Route path="/" element={<ProtectedRoute />} >
+            
+            {/* By wrapping EVERY page inside the Dashboard component here, 
+                your sidebar and header will NEVER disappear! */}
+            <Route path="dashboard" element={<Dashboard><DashboardHome /></Dashboard>} />
+            <Route path="invoices" element={<Dashboard><AllInvoices /></Dashboard>} />
+            <Route path="invoices/new" element={<Dashboard><CreateInvoice /></Dashboard>} />
+            <Route path="invoice/:id" element={<Dashboard><InvoiceDetail /></Dashboard>} />
+            <Route path="profile" element={<Dashboard><ProfilePage /></Dashboard>} />
+            
+          </Route>
+
+          {/* Catch-all route for 404s */}
           <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+        </Routes>
       </Router>
-      <Toaster>
+
+      {/* Fixed Toaster Syntax */}
+      <Toaster 
         toastOptions={{
           className: '',
-          style:{
-            fontSize:'13px',
+          style: {
+            fontSize: '13px',
           }
-        }}
-      </Toaster>
+        }} 
+      />
     </AuthProvider>
   );
 };
