@@ -16,6 +16,7 @@ import InvoiceDetail from './pages/Invoices/InvoiceDetails';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import DashboardHome from './pages/Dashboard/DashBoardHome';
+import EditInvoice from './pages/Invoices/EditInvoice';
 
 const App = () => {
   return (
@@ -35,6 +36,8 @@ const App = () => {
             <Route path="dashboard" element={<Dashboard><DashboardHome /></Dashboard>} />
             <Route path="invoices" element={<Dashboard><AllInvoices /></Dashboard>} />
             <Route path="invoices/new" element={<Dashboard><CreateInvoice /></Dashboard>} />
+              <Route path="invoices/edit/:id" element={<Dashboard><EditInvoice /></Dashboard>} />
+           
             <Route path="invoice/:id" element={<Dashboard><InvoiceDetail /></Dashboard>} />
             <Route path="profile" element={<Dashboard><ProfilePage /></Dashboard>} />
             

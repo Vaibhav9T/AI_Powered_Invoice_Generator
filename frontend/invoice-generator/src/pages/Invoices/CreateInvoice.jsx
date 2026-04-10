@@ -17,7 +17,6 @@ const CreateInvoice = () => {
   const { user } = useAuth();
   const existingInvoice = location.state?.existingInvoice;
 
-  // Added paymentTerms to state
   const [formData, setFormData] = useState(
     existingInvoice || {
       invoiceNumber: `INV-${Math.floor(10000 + Math.random() * 90000)}`,
@@ -89,14 +88,16 @@ const CreateInvoice = () => {
     return calculateSubtotal() + calculateTotalTax();
   };
 
+  // 🔥 THE FIX IS HERE: We no longer smash the billTo object into a string!
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const payload = {
         ...formData,
-        total: calculateGrandTotal(),
-        billTo: `${formData.billTo.clientName}\n${formData.billTo.address}\n${formData.billTo.phone}`
+        total: calculateGrandTotal()
+        // We removed the bad billTo string formatting here.
+        // It will now safely send the whole formData object exactly as it is.
       };
       await axiosInstance.post(API_PATHS.INVOICE_API.CREATE, payload);
       toast.success("Invoice created successfully!");
@@ -298,10 +299,9 @@ const CreateInvoice = () => {
           </div>
         </div>
 
-        {/* BOTTOM SUMMARY PANEL: Notes, Terms, and Totals (Matches your image!) */}
+        {/* BOTTOM SUMMARY PANEL: Notes, Terms, and Totals */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
-          {/* Notes & Terms */}
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
             <h3 className="font-bold text-slate-800 text-lg mb-2">Notes & Terms</h3>
             <TextareaField
@@ -317,7 +317,6 @@ const CreateInvoice = () => {
             />
           </div>
 
-          {/* Totals Summary */}
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
             <div className="space-y-4 text-slate-600 pt-2">
               <div className="flex justify-between items-center">
