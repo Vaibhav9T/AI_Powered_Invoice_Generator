@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
+
 const Dashboard = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -71,6 +72,8 @@ const Dashboard = ({ children }) => {
           </nav>
         </div>
 
+        
+
         {/* Logout Button (Pinned to bottom) */}
         <div className="p-4 mb-4">
           <button 
@@ -113,14 +116,14 @@ const Dashboard = ({ children }) => {
             </svg>
           </div>
         </header>
-
+        
         {/* Dynamic Content (This is where the "Dashboard" text is in your screenshot) */}
         <div className="px-8 pb-8 flex-1">
           {children ? children : (
             <div className="text-slate-800 text-lg">Dashboard</div>
           )}
         </div>
-        
+      
       </main>
     </div>
   );
