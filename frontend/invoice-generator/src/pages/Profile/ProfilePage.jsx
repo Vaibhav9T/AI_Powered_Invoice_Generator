@@ -27,7 +27,7 @@ const ProfilePage = () => {
     const fetchProfileData = async () => {
       try {
         setIsLoading(true);
-        const response = await axiosInstance.get('/users/profile');
+        const response = await axiosInstance.get('/auth/me');
         const dbUser = response.data;
         
         // Populate the form with the actual database information

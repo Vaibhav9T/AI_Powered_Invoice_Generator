@@ -15,7 +15,7 @@ const ProfileDropdown = () => {
   useEffect(() => {
     const fetchFreshUserData = async () => {
       try {
-        const response = await axiosInstance.get('/users/profile');
+        const response = await axiosInstance.get('/auth/me');
         setDbUser(response.data);
       } catch (error) {
         console.error("Failed to fetch fresh user data for navbar", error);
