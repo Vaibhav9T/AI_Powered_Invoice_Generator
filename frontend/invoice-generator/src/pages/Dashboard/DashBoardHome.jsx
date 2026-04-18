@@ -9,11 +9,24 @@ import { useAuth } from '../../context/AuthContext'; // 🔥 Added Auth Context 
 const DashboardHome = () => {
   const { user } = useAuth(); // 🔥 Get the user here!
   const [recentInvoices, setRecentInvoices] = useState([]);
+  const [dbUser, setDbUser] = useState(null);
   const [stats, setStats] = useState({
     totalInvoices: 0,
     totalPaid: 0,
     totalUnpaid: 0
   });
+
+  useEffect(() => {
+    const fetchFreshUserData = async () => {
+      try {
+        const response = await axiosInstance.get('/users/profile');
+        setDbUser(response.data);
+      } catch (error) {
+        console.error("Failed to fetch fresh user data for dashboard", error);
+      }
+    };
+    fetchFreshUserData();
+  }, []);
 
   useEffect(() => {
     fetchDashboardData();
@@ -55,7 +68,7 @@ const DashboardHome = () => {
       {/* 🔥 Moved this here so it ONLY shows on the Home Dashboard! */}
       <div className="mb-2">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white transition-colors">
-          Welcome back, {user?.name ? user.name.split(' ')[0] : 'User'}!
+          Welcome back, {(dbUser?.name || user?.name || 'User').split(' ')[0]}!
         </h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1 transition-colors">
           Here's your invoice overview.

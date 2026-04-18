@@ -167,10 +167,12 @@ const CreateInvoice = () => {
             type="date"
             value={formData.invoiceDate}
             onChange={(e) => setFormData({...formData, invoiceDate: e.target.value})}
+            className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors dark:[&::-webkit-calendar-picker-indicator]:invert"
           />
           <InputField
             label="Due Date"
             type="date"
+            className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors dark:[&::-webkit-calendar-picker-indicator]:invert"
             value={formData.dueDate}
             onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
           />
