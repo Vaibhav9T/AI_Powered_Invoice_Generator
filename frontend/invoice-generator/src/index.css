@@ -24,6 +24,7 @@
     color: #0f172a; /* dark slate text */
     font-family: 'Inter', sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
+
   }
 
   /* 🔥 Dark Mode Overrides for the entire page background */
@@ -69,3 +70,4 @@
     margin: 0.5in;
   }
 }
+

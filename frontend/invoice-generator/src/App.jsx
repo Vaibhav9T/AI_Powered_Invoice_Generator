@@ -39,7 +39,7 @@ const App = () => {
           <Route path="/" element={<ProtectedRoute />} >
             
             {/* 🔥 THE ONE AND ONLY PICTURE FRAME 🔥 */}
-            {/* <Route element={<DashboardLayout />}> */}
+            <Route element={<DashboardLayout />}>
               
               {/* The Pictures (Pages) inside the frame */}
               <Route path="dashboard" element={<DashboardHome />} />
@@ -49,7 +49,7 @@ const App = () => {
               <Route path="invoice/:id" element={<InvoiceDetail />} />
               <Route path="profile" element={<ProfilePage />} />
               
-            {/* </Route> */}
+            </Route>
 
           </Route>
 
