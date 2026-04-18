@@ -4,7 +4,7 @@ import {
     parseInvoiceFormatText, 
     generateReminderEmail, 
     getDashboardSummary
-} from '../controllers/aiController.js'; 
+} from '../controllers/aiControllers.js'; 
 import { protect } from '../middleware/authMiddleware.js';
 
 // Import your auth middleware (assuming you have one to protect routes!)

@@ -2,13 +2,15 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate
+  Navigate,
+  Outlet // 🔥 ADDED THIS: The magic component that swaps pages
 } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+
 import LandingPage from './pages/LandingPage/LandingPage';
 import Signup from './pages/auth/Signup';
 import Login from './pages/auth/Login';
-import Dashboard from './pages/Dashboard/Dashboard'; // Note: Removed .jsx extension for cleaner imports
+// import Dashboard from './pages/Dashboard/Dashboard'; 
 import ProfilePage from './pages/Profile/ProfilePage';
 import AllInvoices from './pages/Invoices/AllInvoices';
 import CreateInvoice from './pages/Invoices/CreateInvoice';
@@ -17,30 +19,38 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import DashboardHome from './pages/Dashboard/DashBoardHome';
 import EditInvoice from './pages/Invoices/EditInvoice';
+import DashboardLayout from './components/layout/DashboardLayout';
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public Routes */}
+          {/* ==========================================
+              PUBLIC ROUTES 
+          ========================================== */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
 
-          {/* Protected Routes */}
+          {/* ==========================================
+              PROTECTED ROUTES (Requires Login)
+          ========================================== */}
           <Route path="/" element={<ProtectedRoute />} >
             
-            {/* By wrapping EVERY page inside the Dashboard component here, 
-                your sidebar and header will NEVER disappear! */}
-            <Route path="dashboard" element={<Dashboard><DashboardHome /></Dashboard>} />
-            <Route path="invoices" element={<Dashboard><AllInvoices /></Dashboard>} />
-            <Route path="invoices/new" element={<Dashboard><CreateInvoice /></Dashboard>} />
-              <Route path="invoices/edit/:id" element={<Dashboard><EditInvoice /></Dashboard>} />
-           
-            <Route path="invoice/:id" element={<Dashboard><InvoiceDetail /></Dashboard>} />
-            <Route path="profile" element={<Dashboard><ProfilePage /></Dashboard>} />
-            
+            {/* 🔥 THE ONE AND ONLY PICTURE FRAME 🔥 */}
+            {/* <Route element={<DashboardLayout />}> */}
+              
+              {/* The Pictures (Pages) inside the frame */}
+              <Route path="dashboard" element={<DashboardHome />} />
+              <Route path="invoices" element={<AllInvoices />} />
+              <Route path="invoices/new" element={<CreateInvoice />} />
+              <Route path="invoices/edit/:id" element={<EditInvoice />} />
+              <Route path="invoice/:id" element={<InvoiceDetail />} />
+              <Route path="profile" element={<ProfilePage />} />
+              
+            {/* </Route> */}
+
           </Route>
 
           {/* Catch-all route for 404s */}
@@ -48,7 +58,6 @@ const App = () => {
         </Routes>
       </Router>
 
-      {/* Fixed Toaster Syntax */}
       <Toaster 
         toastOptions={{
           className: '',
