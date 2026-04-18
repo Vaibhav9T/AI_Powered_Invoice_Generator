@@ -65,7 +65,7 @@ export const parseInvoiceFormatText = async (req, res) => {
 export const generateReminderEmail = async (req, res) => {
     try {
         const { invoiceId } = req.body;
-        
+        console.log("🔥 BACKEND HIT! Looking for Invoice ID:", req.body.invoiceId);
         if (!invoiceId) {
             return res.status(400).json({ message: "Invoice ID is required" });
         }

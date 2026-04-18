@@ -39,6 +39,32 @@ const CreateInvoice = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        // Grab the latest profile data from the database
+        const response = await axiosInstance.get('/users/profile');
+        const userData = response.data;
+
+        // If we are making a NEW invoice (not editing an old one), fill in the Bill From
+        if (!existingInvoice) {
+          setFormData((prev) => ({
+            ...prev,
+            billFrom: {
+              businessName: userData.businessName || userData.name || "",
+              email: userData.email || "",
+              address: userData.address || "",
+              phone: userData.phone || "",
+            }
+          }));
+        }
+      } catch (error) {
+        console.error("Could not fetch user profile for auto-fill:", error);
+      }
+    };
+    fetchUserProfile();
+  }, [existingInvoice]);
+
+  useEffect(() => {
     const aiData = location.state?.aiData;
     if (aiData) {
       setFormData((prev) => ({
@@ -121,7 +147,7 @@ const CreateInvoice = () => {
       
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <button onClick={() => navigate(-1)} className="flex items-center text-slate-500 hover:text-slate-800 transition-colors">
+        <button onClick={() => navigate(-1)} className="flex items-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
           <ArrowLeft size={20} className="mr-2" /> Back
         </button>
       </div>
@@ -129,7 +155,7 @@ const CreateInvoice = () => {
       <form className="space-y-6" onSubmit={handleSubmit}>
         
         {/* TOP PANEL: Invoice Details */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 transition-colors">
           <InputField
             label="Invoice Number"
             type="text"
@@ -152,8 +178,8 @@ const CreateInvoice = () => {
 
         {/* MIDDLE PANEL: Bill From & Bill To */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-            <h3 className="font-bold text-slate-800 text-lg mb-2">Bill From</h3>
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm space-y-4 transition-colors">
+            <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-2">Bill From</h3>
             <InputField
               label="Business Name"
               type="text"
@@ -179,8 +205,8 @@ const CreateInvoice = () => {
             />
           </div>
 
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-            <h3 className="font-bold text-slate-800 text-lg mb-2">Bill To</h3>
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm space-y-4 transition-colors">
+            <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-2">Bill To</h3>
             <InputField
               label="Client Name"
               type="text"
@@ -208,10 +234,10 @@ const CreateInvoice = () => {
         </div>
 
         {/* ITEMS PANEL */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="font-bold text-slate-800 text-lg mb-6">Items</h3>
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm transition-colors">
+          <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-6">Items</h3>
           
-          <div className="grid grid-cols-12 gap-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 border-b border-gray-100 pb-3">
+          <div className="grid grid-cols-12 gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 border-b border-gray-100 dark:border-slate-700 pb-3">
             <div className="col-span-4">Item</div>
             <div className="col-span-2">Qty</div>
             <div className="col-span-2">Price</div>
@@ -226,7 +252,7 @@ const CreateInvoice = () => {
                   <input
                     type="text"
                     placeholder="Item name"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                     value={item.name}
                     onChange={(e) => {
                       const newItems = [...formData.items];
@@ -238,7 +264,7 @@ const CreateInvoice = () => {
                 <div className="col-span-2">
                   <input
                     type="number"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                     value={item.quantity}
                     onChange={(e) => {
                       const newItems = [...formData.items];
@@ -250,7 +276,7 @@ const CreateInvoice = () => {
                 <div className="col-span-2">
                   <input
                     type="number"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                     value={item.unitPrice}
                     onChange={(e) => {
                       const newItems = [...formData.items];
@@ -262,7 +288,7 @@ const CreateInvoice = () => {
                 <div className="col-span-2">
                   <input
                     type="number"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                     value={item.tax}
                     onChange={(e) => {
                       const newItems = [...formData.items];
@@ -272,14 +298,14 @@ const CreateInvoice = () => {
                   />
                 </div>
                 <div className="col-span-2 flex items-center justify-between">
-                  <span className="text-sm text-slate-700 font-medium ml-2">
+                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium ml-2">
                     ${calculateItemTotal(item).toFixed(2)}
                   </span>
                   <button 
                     type="button" 
                     onClick={() => handleRemoveItem(index)} 
                     disabled={formData.items.length === 1}
-                    className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded border border-transparent hover:border-red-200 transition-all disabled:opacity-30"
+                    className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded border border-transparent hover:border-red-200 dark:hover:border-red-900/30 transition-all disabled:opacity-30"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -292,7 +318,7 @@ const CreateInvoice = () => {
             <button 
               type="button" 
               onClick={handleAddItem} 
-              className="flex items-center gap-1 border border-gray-200 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-1 border border-gray-200 dark:border-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
             >
               <Plus size={16} /> Add Item
             </button>
@@ -302,8 +328,8 @@ const CreateInvoice = () => {
         {/* BOTTOM SUMMARY PANEL: Notes, Terms, and Totals */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-            <h3 className="font-bold text-slate-800 text-lg mb-2">Notes & Terms</h3>
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm space-y-4 transition-colors">
+            <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-2">Notes & Terms</h3>
             <TextareaField
               label="Notes"
               value={formData.notes}
@@ -317,8 +343,8 @@ const CreateInvoice = () => {
             />
           </div>
 
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
-            <div className="space-y-4 text-slate-600 pt-2">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm flex flex-col justify-between transition-colors">
+            <div className="space-y-4 text-slate-600 dark:text-slate-400 pt-2">
               <div className="flex justify-between items-center">
                 <span>Subtotal:</span>
                 <span>${calculateSubtotal().toFixed(2)}</span>
@@ -327,16 +353,16 @@ const CreateInvoice = () => {
                 <span>Tax:</span>
                 <span>${calculateTotalTax().toFixed(2)}</span>
               </div>
-              <div className="border-t border-gray-100 pt-4 mt-2 flex justify-between items-center">
-                <span className="text-lg font-bold text-slate-800">Total:</span>
-                <span className="text-xl font-bold text-slate-900">${calculateGrandTotal().toFixed(2)}</span>
+              <div className="border-t border-gray-100 dark:border-slate-700 pt-4 mt-2 flex justify-between items-center">
+                <span className="text-lg font-bold text-slate-800 dark:text-white">Total:</span>
+                <span className="text-xl font-bold text-slate-900 dark:text-blue-400">${calculateGrandTotal().toFixed(2)}</span>
               </div>
             </div>
 
             <button 
               type="submit" 
               disabled={loading} 
-              className="mt-8 w-full bg-blue-900 text-white py-3 rounded-lg font-medium flex justify-center items-center gap-2 hover:bg-blue-800 transition-colors disabled:opacity-70"
+              className="mt-8 w-full bg-blue-900 dark:bg-blue-600 text-white py-3 rounded-lg font-medium flex justify-center items-center gap-2 hover:bg-blue-800 dark:hover:bg-blue-700 transition-colors disabled:opacity-70"
             >
               <Save size={18} /> {loading ? "Saving..." : "Save Invoice"}
             </button>

@@ -44,15 +44,15 @@ const AIInsights = ({ invoices = [] }) => {
   const insightsList = generateInsights();
 
   return (
-    <div className="bg-[#e9ecef] border border-gray-200/60 rounded-xl p-5 shadow-sm">
+    <div className="bg-white dark:bg-slate-800 border border-gray-200/60 dark:border-slate-700 rounded-xl p-5 shadow-sm transition-colors">
       <div className="flex items-center gap-2 mb-3">
         <Lightbulb className="text-yellow-500" size={20} />
-        <h2 className="text-lg font-bold text-slate-800">AI Insights</h2>
+        <h2 className="text-lg font-bold text-slate-800 dark:text-white">AI Insights</h2>
       </div>
       
       <ul className="list-disc pl-6 space-y-2">
         {insightsList.map((insight, index) => (
-          <li key={index} className="text-sm text-slate-600 leading-relaxed">
+          <li key={index} className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
             {insight}
           </li>
         ))}
