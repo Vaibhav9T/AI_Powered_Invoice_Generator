@@ -7,9 +7,9 @@ import User from '../models/User.js';
 // @access  Private
 export const getUserProfile = async (req, res) => {
     try {
-        // req.user.id comes from your protect middleware
-        // .select('-password') ensures we don't accidentally send the password hash to the frontend
-        const user = await User.findById(req.user.id).select('-password');
+        // ✅ Safely grab the ID and find the user ONCE
+        const userId = req.user._id || req.user.id;
+        const user = await User.findById(userId).select('-password');
 
         if (user) {
             res.json(user);
@@ -29,10 +29,11 @@ export const getUserProfile = async (req, res) => {
 // @access  Private
 export const updateUserProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        // ✅ Safely grab the ID and find the user ONCE
+        const userId = req.user._id || req.user.id;
+        const user = await User.findById(userId);
 
         if (user) {
-            // Update the fields if the frontend sent them, otherwise keep the existing data
             user.name = req.body.name || user.name;
             user.email = req.body.email || user.email;
             user.phone = req.body.phone || user.phone;
@@ -40,14 +41,12 @@ export const updateUserProfile = async (req, res) => {
             user.address = req.body.address || user.address;
             user.taxId = req.body.taxId || user.taxId;
 
-            // Optional: If you ever want to let users update their password from the profile page
             if (req.body.password) {
                 user.password = req.body.password;
             }
 
             const updatedUser = await user.save();
 
-            // Send back the updated user object (without the password)
             res.json({
                 _id: updatedUser._id,
                 name: updatedUser.name,
@@ -56,7 +55,6 @@ export const updateUserProfile = async (req, res) => {
                 businessName: updatedUser.businessName,
                 address: updatedUser.address,
                 taxId: updatedUser.taxId,
-                // Keep their current login token active
                 token: req.headers.authorization.split(' ')[1] 
             });
         } else {
