@@ -23,5 +23,6 @@ export const API_PATHS = {
 
  USER_API : {
     PROFILE: `${API_BASE_URL}/users/profile`,
+   UPDATE_PROFILE: `${API_BASE_URL}/users/profile`,
  }
 };
