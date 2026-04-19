@@ -4,7 +4,7 @@ import ProfileDropdown from './ProfileDropdown';
 import ThemeToggle from './ThemeToggle';
 import { useLocation } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ onMenuClick }) => {
   const location = useLocation();
 
   // Optional: A little trick to format the page title based on the URL!
@@ -20,8 +20,11 @@ const Navbar = () => {
       
       {/* Left Side: Page Title & Mobile Menu Toggle */}
       <div className="flex items-center gap-4">
-        {/* This button is hidden on desktop, but useful if you ever make the sidebar collapse on mobile! */}
-        <button className="md:hidden p-2 -ml-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+        {/* Mobile Menu Toggle */}
+        <button 
+          onClick={onMenuClick}
+          className="md:hidden p-2 -ml-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+        >
           <Menu size={20} />
         </button>
         

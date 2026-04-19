@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
     businessName: { type: String, default: '' },
     address: { type: String, default: '' },
     phone: { type: String, default: '' },
+    taxId: { type: String, default: '' },
 }, { timestamps: true });
 
 

@@ -42,7 +42,7 @@ const CreateInvoice = () => {
     const fetchUserProfile = async () => {
       try {
         // Grab the latest profile data from the database
-        const response = await axiosInstance.get('/users/profile');
+        const response = await axiosInstance.get('/auth/me');
         const userData = response.data;
 
         // If we are making a NEW invoice (not editing an old one), fill in the Bill From

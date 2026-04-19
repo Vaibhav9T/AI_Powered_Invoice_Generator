@@ -6,12 +6,14 @@ import {
   Plus, 
   User, 
   LogOut,
-  BriefcaseBusiness
+  BriefcaseBusiness,
+  X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+import Logo from '../ui/Logo';
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -36,15 +38,16 @@ const Sidebar = () => {
     <div className="h-full flex flex-col bg-white dark:bg-[#0f172a] transition-colors duration-300">
       
       {/* App Logo & Name */}
-      <div className="h-[72px] flex items-center px-6 border-b border-transparent">
-        <div className="flex items-center gap-3 text-blue-600 dark:text-blue-500">
-          <div className="bg-blue-600 text-white p-1.5 rounded-lg">
-            <BriefcaseBusiness size={24} />
-          </div>
-          <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-            AI Invoice App
-          </span>
-        </div>
+      <div className="h-[72px] flex items-center justify-between px-6 border-b border-transparent">
+        {/* 1. Logo Section */}
+          <Logo />
+        {/* Close button for mobile */}
+        <button 
+          onClick={onClose}
+          className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+        >
+          <X size={20} />
+        </button>
       </div>
 
       {/* Navigation Links */}
@@ -53,6 +56,7 @@ const Sidebar = () => {
           <Link
             key={link.name}
             to={link.path}
+            onClick={onClose}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
               isActive(link.path)
                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' // Active Style
