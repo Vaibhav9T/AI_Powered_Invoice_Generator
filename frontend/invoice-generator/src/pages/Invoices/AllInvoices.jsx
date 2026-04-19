@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  Search, Plus, Sparkles, Edit, Trash2, Mail, Loader2, Eye
+  Search, Plus, Sparkles, Eye, Trash2, Mail, Loader2, X
 } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths'; 
 import toast from 'react-hot-toast';
-import AIGenerateModal from '../../components/invoices/AIGenerate.jsx';
 import ReminderModal from '../../components/invoices/ReminderModel.jsx';
+import UnifiedAiScanner from '../../components/invoices/UnifiedAiScanner.jsx';
 
 const AllInvoices = () => {
   const [invoices, setInvoices] = useState([]);
@@ -15,8 +15,8 @@ const AllInvoices = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Statuses');
   const navigate = useNavigate();
+  
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-
   const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
 
@@ -40,9 +40,7 @@ const AllInvoices = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this invoice?")) {
       try {
-        // 🔥 Change this line to use the exact raw URL:
         await axiosInstance.delete(`/invoices/${id}`);
-        
         setInvoices(invoices.filter(inv => inv._id !== id));
         toast.success("Invoice deleted successfully");
       } catch (error) {
@@ -65,11 +63,7 @@ const AllInvoices = () => {
     }
   };
 
-
-
-
   const filteredInvoices = invoices.filter(invoice => {
-    // Bulletproof client extraction for searching
     let clientName = '';
     if (typeof invoice.billTo === 'string') clientName = invoice.billTo;
     else if (invoice.billTo && invoice.billTo.clientName) clientName = invoice.billTo.clientName;
@@ -84,7 +78,7 @@ const AllInvoices = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 relative">
       
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2 transition-colors">
@@ -94,7 +88,7 @@ const AllInvoices = () => {
         </div>
         <div className="flex gap-3">
           
-          {/* 🔥 CHANGED FROM <Link> TO <button> 🔥 */}
+          {/* Create with AI Button */}
           <button 
             onClick={() => setIsAIModalOpen(true)}
             className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium shadow-sm cursor-pointer"
@@ -176,7 +170,6 @@ const AllInvoices = () => {
                 filteredInvoices.map((invoice) => {
                   const isPaid = invoice.status === 'Paid';
                   
-                  // Bulletproof client name extraction
                   let clientName = 'Unknown Client';
                   if (typeof invoice.billTo === 'string' && invoice.billTo.trim() !== '') {
                     clientName = invoice.billTo.split('\n')[0];
@@ -184,7 +177,6 @@ const AllInvoices = () => {
                     clientName = invoice.billTo.clientName;
                   }
                   
-                  // Bulletproof date formatting
                   let formattedDate = 'Not set';
                   if (invoice.dueDate) {
                     const d = new Date(invoice.dueDate);
@@ -204,7 +196,7 @@ const AllInvoices = () => {
                         {clientName}
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-slate-200">
-                        ${safeTotal.toFixed(2)}
+                        ${safeTotal.toFixed(2)} {/* Remember to change this to formatCurrency if you want Rupees here too! */}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                         {formattedDate}
@@ -255,7 +247,6 @@ const AllInvoices = () => {
                               setIsReminderModalOpen(true);
                               setSelectedInvoiceId(invoice._id);
                             }}
-
                           >
                             <Mail size={16} />
                           </button>
@@ -269,11 +260,41 @@ const AllInvoices = () => {
           </table>
         </div>
       </div>
-      <AIGenerateModal 
-        isOpen={isAIModalOpen} 
-        onClose={() => setIsAIModalOpen(false)} 
-      />
 
+      {/* 🔥 THE NEW AI SCANNER MODAL 🔥 */}
+      {isAIModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-xl rounded-2xl shadow-2xl relative border border-gray-200 dark:border-slate-700 overflow-hidden">
+            
+            {/* Modal Header & Close Button */}
+            <div className="flex justify-between items-center p-4 border-b border-gray-100 dark:border-slate-800">
+              <h3 className="font-semibold text-slate-800 dark:text-white flex items-center gap-2">
+                <Sparkles size={18} className="text-blue-500" />
+                Scan Invoice
+              </h3>
+              <button 
+                onClick={() => setIsAIModalOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-full transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              <UnifiedAiScanner 
+                onComplete={(aiData) => {
+                  setIsAIModalOpen(false); // 1. Close the modal
+                  navigate('/invoices/new', { state: { aiData: aiData } }); // 2. Send user to the Create page with data!
+                }} 
+              />
+            </div>
+
+          </div>
+        </div>
+      )}
+      
+      {/* Reminder Modal */}
       <ReminderModal
         isOpen={isReminderModalOpen}
         onClose={() => {

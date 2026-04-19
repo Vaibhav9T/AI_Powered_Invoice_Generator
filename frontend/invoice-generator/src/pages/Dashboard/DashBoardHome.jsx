@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, DollarSign } from 'lucide-react';
+import { FileText, IndianRupee } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInstance';
 import AIInsights from '../../components/AIInsights.jsx';
 import { API_PATHS } from '../../utils/apiPaths.js';
@@ -61,6 +61,15 @@ const DashboardHome = () => {
     }
   };
 
+  // --- Currency Formatting ---
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2
+    }).format(amount || 0); // Added '|| 0' as a safety net for empty dashboards
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       
@@ -92,22 +101,22 @@ const DashboardHome = () => {
         {/* Total Paid Card */}
         <div className="bg-white dark:bg-slate-800 border border-gray-200/60 dark:border-slate-700 rounded-xl p-5 flex items-center gap-4 shadow-sm transition-colors">
           <div className="h-12 w-12 rounded-lg bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
-            <DollarSign className="text-green-600 dark:text-green-400 h-6 w-6" />
+            <IndianRupee className="text-green-600 dark:text-green-400 h-6 w-6" />
           </div>
           <div>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-0.5">Total Paid</p>
-            <h3 className="text-2xl font-bold text-slate-800 dark:text-white">${stats.totalPaid.toFixed(2)}</h3>
+            <h3 className="text-2xl font-bold text-slate-800 dark:text-white">{formatCurrency(stats.totalPaid)}</h3>
           </div>
         </div>
 
         {/* Total Unpaid Card */}
         <div className="bg-white dark:bg-slate-800 border border-gray-200/60 dark:border-slate-700 rounded-xl p-5 flex items-center gap-4 shadow-sm transition-colors">
           <div className="h-12 w-12 rounded-lg bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
-            <DollarSign className="text-red-600 dark:text-red-400 h-6 w-6" />
+            <IndianRupee className="text-red-600 dark:text-red-400 h-6 w-6" />
           </div>
           <div>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-0.5">Total Unpaid</p>
-            <h3 className="text-2xl font-bold text-slate-800 dark:text-white">${stats.totalUnpaid.toFixed(2)}</h3>
+            <h3 className="text-2xl font-bold text-slate-800 dark:text-white">{formatCurrency(stats.totalUnpaid)}</h3>
           </div>
         </div>
       </div>
@@ -170,7 +179,7 @@ const DashboardHome = () => {
                         <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">#{invoice.invoiceNumber || 'INV-000'}</div>
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-slate-800 dark:text-slate-200">
-                        ${safeTotal.toFixed(2)}
+                        {formatCurrency(safeTotal)}
                       </td>
                       <td className="px-6 py-4">
                         {invoice.status === 'Paid' ? (

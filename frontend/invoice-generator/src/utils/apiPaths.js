@@ -17,6 +17,7 @@ export const API_PATHS = {
 
  AI_API : {
     PARSE: `${API_BASE_URL}/ai/parse`,
+    PARSE_IMAGE: `${API_BASE_URL}/ai/parse-image`,
     REMINDER: `${API_BASE_URL}/ai/reminder`,
     DASHBOARD: `${API_BASE_URL}/ai/dashboard`,
 },

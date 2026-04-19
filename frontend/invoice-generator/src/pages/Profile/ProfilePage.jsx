@@ -7,7 +7,7 @@ import axiosInstance from '../../utils/axiosInstance';
 import toast from 'react-hot-toast';
 
 const ProfilePage = () => {
-  const { user } = useAuth(); // We keep this just in case, but rely on DB for form data
+  const { user, updateUser } = useAuth(); // We keep this just in case, but rely on DB for form data
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,17 +28,20 @@ const ProfilePage = () => {
       try {
         setIsLoading(true);
         const response = await axiosInstance.get('/auth/me');
+
         const dbUser = response.data;
         
         // Populate the form with the actual database information
-        setFormData({
-          name: dbUser.name || '',
-          email: dbUser.email || '',
-          phone: dbUser.phone || '',
-          businessName: dbUser.businessName || '',
-          address: dbUser.address || '',
-          taxId: dbUser.taxId || '',
-        });
+       if (response.data && response.data.user) {
+            setFormData({
+                name: response.data.user.name || '',
+                email: response.data.user.email || '',
+                businessName: response.data.user.businessName || '',
+                phone: response.data.user.phone || '',
+                address: response.data.user.address || '',
+                taxId: response.data.user.taxId || '',
+            });
+          }
       } catch (error) {
         console.error("Error fetching profile from DB:", error);
         toast.error("Failed to load profile data.");
@@ -60,8 +63,9 @@ const ProfilePage = () => {
     setIsSaving(true);
     try {
       // Send the updated data to the backend
-      const response = await axiosInstance.put('/auth/me', formData);
+      const response = await axiosInstance.put('/auth/profile', formData);
       
+      updateUser(response.data.user);
       toast.success('Profile updated successfully!');
       setIsEditing(false);
       

@@ -34,15 +34,18 @@ export const registerUser = async (req, res) => {
         await user.save();
 
         if(user) {
+            // 🔥 THE FIX: Nested user object
             res.status(201).json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                businessName: user.businessName,
-                phone: user.phone,
-                address: user.address,
-                taxId: user.taxId,
                 token: generateToken(user._id),
+                user: {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    businessName: user.businessName,
+                    phone: user.phone,
+                    address: user.address,
+                    taxId: user.taxId,
+                }
             });
         } else {
             res.status(400).json({ message: "Invalid user data" });
@@ -61,16 +64,18 @@ export const loginUser = async (req, res) => {
         const user = await User.findOne({ email }).select('+password');
         
         if (user && (await user.matchPassword(password))) {
+            // 🔥 THE FIX: Nested user object
             res.json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
                 token: generateToken(user._id),
-
-                businessName: user.businessName || "",
-                address: user.address || "",
-                phone: user.phone || "",
-                taxId: user.taxId || "",
+                user: {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    businessName: user.businessName || "",
+                    address: user.address || "",
+                    phone: user.phone || "",
+                    taxId: user.taxId || "",
+                }
             });
         } else {
             res.status(401).json({ message: "Invalid email or password" });
@@ -87,16 +92,18 @@ export const getMe = async (req, res) => {
         const user = await User.findById(req.user.id);
         
         if (user) {
+            // 🔥 THE FIX: Nested user object
             res.json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
                 token: generateToken(user._id),
-
-                businessName: user.businessName || "",
-                address: user.address || "",
-                phone: user.phone || "",
-                taxId: user.taxId || "",
+                user: {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    businessName: user.businessName || "",
+                    address: user.address || "",
+                    phone: user.phone || "",
+                    taxId: user.taxId || "",
+                }
             });
         } else {
             res.status(404).json({ message: "User not found" });
@@ -124,15 +131,19 @@ export const updateUserProfile = async (req, res) => {
             }
 
             const updatedUser = await user.save();
+            
+            // 🔥 THE FIX: Nested user object
             res.json({
-                _id: updatedUser._id,
-                name: updatedUser.name,
-                email: updatedUser.email,
-                businessName: updatedUser.businessName,
-                address: updatedUser.address,
-                phone: updatedUser.phone,
-                taxId: updatedUser.taxId,
                 token: generateToken(updatedUser._id),
+                user: {
+                    _id: updatedUser._id,
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    businessName: updatedUser.businessName,
+                    address: updatedUser.address,
+                    phone: updatedUser.phone,
+                    taxId: updatedUser.taxId,
+                }
             });
         } else {
             res.status(404).json({ message: "User not found" });
