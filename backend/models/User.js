@@ -23,8 +23,7 @@ const userSchema = new mongoose.Schema({
     address: { type: String, default: '' },
     phone: { type: String, default: '' },
     taxId: { type: String, default: '' },
-}, { timestamps: true,
-    strict: false 
+}, { timestamps: true
  });
 
 
