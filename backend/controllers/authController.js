@@ -9,7 +9,7 @@ const generateToken = (id) => {
 };
 
 export const registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, businessName, phone, address, taxId } = req.body;
 
     try {
         if(!name || !email || !password) {
@@ -22,7 +22,15 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
         
-        const user = new User({ name, email, password });
+        const user = new User({ 
+            name, 
+            email, 
+            password,
+            businessName,
+            phone,
+            address,
+            taxId 
+        });
         await user.save();
 
         if(user) {
@@ -30,6 +38,10 @@ export const registerUser = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                businessName: user.businessName,
+                phone: user.phone,
+                address: user.address,
+                taxId: user.taxId,
                 token: generateToken(user._id),
             });
         } else {
@@ -58,6 +70,7 @@ export const loginUser = async (req, res) => {
                 businessName: user.businessName || "",
                 address: user.address || "",
                 phone: user.phone || "",
+                taxId: user.taxId || "",
             });
         } else {
             res.status(401).json({ message: "Invalid email or password" });
@@ -83,6 +96,7 @@ export const getMe = async (req, res) => {
                 businessName: user.businessName || "",
                 address: user.address || "",
                 phone: user.phone || "",
+                taxId: user.taxId || "",
             });
         } else {
             res.status(404).json({ message: "User not found" });
@@ -103,6 +117,7 @@ export const updateUserProfile = async (req, res) => {
             user.businessName = req.body.businessName || user.businessName;
             user.address = req.body.address || user.address;
             user.phone = req.body.phone || user.phone;
+            user.taxId = req.body.taxId || user.taxId;
 
             if (req.body.password) {
                 user.password = req.body.password;
@@ -116,6 +131,7 @@ export const updateUserProfile = async (req, res) => {
                 businessName: updatedUser.businessName,
                 address: updatedUser.address,
                 phone: updatedUser.phone,
+                taxId: updatedUser.taxId,
                 token: generateToken(updatedUser._id),
             });
         } else {

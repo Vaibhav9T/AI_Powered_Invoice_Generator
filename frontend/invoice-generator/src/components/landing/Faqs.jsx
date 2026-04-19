@@ -4,17 +4,17 @@ import React, {useState} from 'react';
 
 
 const FaqItem = ({ faq, isOpen, onClick }) => (
-        < div className="border border-gray-200 rounded-xl overflow-hidden">
-        <button onClick={onClick} className="w-full flex items-center justify-between p-6 bg-white hover:bg-gray-50 cursor-pointer trasition-colors duration-200">
-        <span className="text-lg font-mediuum text-gray-900 pr-4 text-left ">{faq.question}</span>
-        <ChevronDown className={`w-6 h-6 text-gray-400 transition-transform duration-300  ${ isOpen ? 'transform rotate-180' : ''}`} />
+        <div className={`border border-slate-200/60 dark:border-slate-700/50 rounded-2xl overflow-hidden transition-all duration-300 bg-white/60 dark:bg-slate-800/40 backdrop-blur-sm ${isOpen ? 'shadow-md' : 'hover:shadow-sm'}`}>
+        <button onClick={onClick} className="w-full flex items-center justify-between p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/60 cursor-pointer transition-colors duration-200 outline-none">
+        <span className="text-lg font-semibold text-slate-900 dark:text-white pr-4 text-left leading-snug">{faq.question}</span>
+        <ChevronDown className={`w-6 h-6 text-slate-400 shrink-0 transition-transform duration-300 ${ isOpen ? 'transform rotate-180 text-blue-600 dark:text-blue-400' : ''}`} />
         </button>
-        {isOpen && (
-        <div className="px-6 pb-6 text-gray-600 leading-relaxed border-t pt-5 border-gray-100">
-        {faq.answer}
+        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="px-6 pb-6 text-slate-600 dark:text-slate-400 leading-relaxed pt-2">
+            {faq.answer}
+            </div>
         </div>
-        )}
-</div>
+        </div>
 )
 
 
@@ -26,15 +26,15 @@ const FAQ = () => {
     };
 
     return (
-        <section id='Faq' className='py-20 lg:py-28 bg-white'>
+        <section id='Faq' className='py-24 lg:py-32 relative z-10 transition-colors duration-300'>
         <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div className='text-center mb-16'>
-            <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-gray-900 ">Frequently Asked Questions</h2>
-            <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto">
+            <h2 className="text-3xl sm:text-5xl font-extrabold mb-6 text-slate-900 dark:text-white tracking-tight">Frequently Asked Questions</h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
                 Everything you know about InvoiceAI
             </p>
             </div>
-            <div className="space-y-5 ">
+            <div className="space-y-4 px-4 sm:px-0">
                 {FAQS.map((faq, index) => (
                     <FaqItem key={index} faq={faq} isOpen={activeIndex === index} onClick={() => handleClick(index)}  />
                 ))}

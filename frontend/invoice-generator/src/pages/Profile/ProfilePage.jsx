@@ -60,7 +60,7 @@ const ProfilePage = () => {
     setIsSaving(true);
     try {
       // Send the updated data to the backend
-      const response = await axiosInstance.put('/users/profile', formData);
+      const response = await axiosInstance.put('/auth/me', formData);
       
       toast.success('Profile updated successfully!');
       setIsEditing(false);
