@@ -173,6 +173,7 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!validate()) {
       return;
     }
