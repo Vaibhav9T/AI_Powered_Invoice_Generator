@@ -3,85 +3,95 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 const AuthContext = createContext();
 
 export const useAuth = () => {
-const context = useContext(AuthContext);
-if (!context) {
-throw new Error('useAuth must be used within an AuthProvider');
-}
-return context;
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 };
 
-
 export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const[isAuthenticated, setIsAuthenticated] = useState(false);
+    useEffect(() => {
+        checkAuthStatus();
+    }, []);
 
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
-    
-    try {
-        const token = localStorage.getItem('token');
-        const userStr = localStorage.getItem('user');
-
-        if (token && userStr) {
-        const userData = JSON.parse(userStr);
-        setUser(userData);
-        setIsAuthenticated(true);
-        }
-      }
-        catch (error) {
-        console.error('Error checking auth status:', error);
-        logout();
-        }
-        finally {
-        setLoading(false);
-        }
-      
+    const wipeAllStorage = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
     };
 
- const login= (userData, token) => {
-   localStorage.setItem('token', token);
-   localStorage.setItem('user', JSON.stringify(userData));
-   setUser(userData);
-   setIsAuthenticated(true);
- };
+    const checkAuthStatus = () => {
+        try {
+            // Look in BOTH places!
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
 
- const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    setUser(null);
-    setIsAuthenticated(false);
-    window.location.href = '/';
- };
+            if (token && userStr && userStr !== "undefined" && userStr !== "null") {
+                setUser(JSON.parse(userStr));
+                setIsAuthenticated(true);
+            } else {
+                wipeAllStorage();
+                setIsAuthenticated(false);
+            }
+        } catch (error) {
+            console.error("Error reading auth storage:", error);
+            wipeAllStorage();
+            setUser(null);
+            setIsAuthenticated(false);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    // Receives rememberMe from Login.jsx
+    const login = (userData, token, rememberMe) => {
+        const storage = rememberMe ? localStorage : sessionStorage;
+        
+        // Clear everything first to prevent conflicts
+        wipeAllStorage();
 
- const updateUser = (updatedData) => {
-    const newUserData = { ...user, ...updatedData };
-    localStorage.setItem('user', JSON.stringify(newUserData));
-    setUser(newUserData);
-    
- };
+        storage.setItem('token', token);
+        storage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        setIsAuthenticated(true);
+    };
 
- const value = {
-    user,
-    loading,
-    isAuthenticated,
-    login,
-    logout,
-    updateUser,
-    checkAuthStatus
- };
+    const logout = () => {
+        wipeAllStorage();
+        setUser(null);
+        setIsAuthenticated(false);
+        window.location.href = '/login';
+    };
 
-  return(
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+    const updateUser = (updatedData) => {
+        const newUserData = { ...user, ...updatedData };
+        // Figure out which storage they are currently using
+        const storage = localStorage.getItem('user') ? localStorage : sessionStorage;
+        storage.setItem('user', JSON.stringify(newUserData));
+        setUser(newUserData);
+    };
+
+    const value = {
+        user,
+        loading,
+        isAuthenticated,
+        login,
+        logout,
+        updateUser,
+        checkAuthStatus
+    };
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export default AuthProvider;

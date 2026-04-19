@@ -59,6 +59,15 @@ const InvoiceDetail = () => {
       : 'Not Set';
   };
 
+   // --- Currency Formatting ---
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2
+    }).format(amount || 0); // Added '|| 0' as a safety net for empty dashboards
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
       
@@ -175,9 +184,9 @@ const InvoiceDetail = () => {
                     <tr key={index}>
                       <td className="py-4 px-4 text-slate-800 dark:text-slate-200 font-medium">{item.description || item.name || 'Service'}</td>
                       <td className="py-4 px-4 text-slate-600 dark:text-slate-400 text-center">{item.quantity}</td>
-                      <td className="py-4 px-4 text-slate-600 dark:text-slate-400 text-right">${(item.unitPrice || 0).toFixed(2)}</td>
+                      <td className="py-4 px-4 text-slate-600 dark:text-slate-400 text-right">{formatCurrency(item.unitPrice || 0)}</td>
                       <td className="py-4 px-4 text-slate-600 dark:text-slate-400 text-center">{item.taxRate || item.tax || 0}%</td>
-                      <td className="py-4 px-4 text-slate-800 dark:text-slate-200 font-bold text-right">${itemTotal.toFixed(2)}</td>
+                      <td className="py-4 px-4 text-slate-800 dark:text-slate-200 font-bold text-right">{formatCurrency(itemTotal)}</td>
                     </tr>
                   );
                 })}
@@ -204,15 +213,15 @@ const InvoiceDetail = () => {
             <div className="w-full md:w-1/3 space-y-3 text-slate-600 dark:text-slate-400 text-right">
               <div className="flex justify-between items-center px-4">
                 <span className="font-medium">Subtotal:</span>
-                <span>${(invoice.subtotal || invoice.total || 0).toFixed(2)}</span>
+                <span>{formatCurrency(invoice.subtotal || invoice.total || 0)}</span>
               </div>
               <div className="flex justify-between items-center px-4">
                 <span className="font-medium">Tax:</span>
-                <span>${(invoice.taxTotal || 0).toFixed(2)}</span>
+                <span>{formatCurrency(invoice.taxTotal || 0)}</span>
               </div>
               <div className="border-t border-slate-200 dark:border-slate-700 pt-3 flex justify-between items-center px-4">
                 <span className="text-lg font-bold text-slate-800 dark:text-white uppercase tracking-wider">Grand Total:</span>
-                <span className="text-2xl font-extrabold text-blue-900 dark:text-blue-400">${(invoice.total || 0).toFixed(2)}</span>
+                <span className="text-2xl font-extrabold text-blue-900 dark:text-blue-400">{formatCurrency(invoice.total || 0)}</span>
               </div>
             </div>
           </div>

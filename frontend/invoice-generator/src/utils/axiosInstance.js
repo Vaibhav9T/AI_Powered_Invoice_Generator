@@ -13,9 +13,10 @@ const axiosInstance = axios.create({
 // Request Interceptor
 axiosInstance.interceptors.request.use(
     (config) => {
-        const accessToken = localStorage.getItem("token");
-        if (accessToken) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
+        // 🔥 Look for the token in BOTH places!
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
@@ -31,8 +32,15 @@ axiosInstance.interceptors.response.use(
     },
     (error) => {
         if (error.response && error.response.status === 401) {
+            console.error("🚨 Backend rejected token! Wiping storage.");
             localStorage.removeItem("token");
-            window.location.href = "/login";
+            localStorage.removeItem("user");
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+            
+            if (window.location.pathname !== '/login') {
+                window.location.href = "/login";
+            }
         }
         return Promise.reject(error);
     }

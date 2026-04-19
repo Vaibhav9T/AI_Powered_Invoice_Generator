@@ -17,8 +17,22 @@ import Testimonials from '../../components/landing/Testimonials';
 import Hero from '../../components/landing/Hero';
 import Faq from '../../components/landing/Faqs';
 import Footer from '../../components/landing/Footer';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const LandingPage = () => {
+  const { isAuthenticated, loading } = useAuth();
+  const navigate = useNavigate();
+
+  // 2. Add the "Bouncer"
+  useEffect(() => {
+    // If the app is done checking memory, and you ARE logged in...
+    if (!loading && isAuthenticated) {
+      navigate('/dashboard', { replace: true }); // ...teleport instantly!
+    }
+  }, [isAuthenticated, loading, navigate]);
+
   return (
     <div className='relative min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 overflow-hidden font-sans'>
       {/* Global Decorative Background */}

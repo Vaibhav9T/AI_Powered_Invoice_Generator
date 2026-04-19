@@ -43,7 +43,7 @@ export const parseInvoiceFormatText = async (req, res) => {
 
         // 🔥 THE FIX: Use config to force pure JSON output
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash-lite",
+            model: "gemini-2.5-flash", // Flash models are optimized for structured data tasks like this
             contents: prompt,
             config: {
                 responseMimeType: "application/json", // This prevents the AI from adding any conversational text or markdown blocks
@@ -63,8 +63,97 @@ export const parseInvoiceFormatText = async (req, res) => {
     }
 };
 
+// controllers/aiController.js
+
 // ==========================================
-// 2. GENERATE REMINDER EMAIL
+// 2 NEW: PARSE INVOICE FROM IMAGE
+// ==========================================
+export const parseInvoiceFromImage = async (req, res) => {
+    try {
+        const { imageBase64, mimeType, customInstructions } = req.body;
+        
+        if (!imageBase64 || !mimeType) {
+            return res.status(400).json({ message: "Please provide an image" });
+        }
+        
+        const prompt = `You are an expert AI data extraction engine specializing in complex, messy, handwritten, and multilingual Indian invoices and hospital bills. 
+        Your task is to analyze the uploaded image and extract the billing details strictly matching the provided JSON schema.
+
+        CRITICAL EXTRACTION RULES:
+        1. Multilingual Names (CRITICAL): Look carefully at the top of the bill for the patient or client name. If the name is written in Devanagari script (Marathi/Hindi, e.g., "प्रशांत शेळके"), you MUST transliterate it accurately into English (e.g., "Prashant Shelke") and place it in the 'clientName' field.
+        2. Invoice Number vs. Date: Do not confuse dates with invoice numbers. If a field says "Date: 12/1/2026", format it and put it in 'invoiceDate'. If there is no explicit invoice or receipt number, leave 'invoiceNumber' as an empty string. Do not force a date into the invoice number field.
+        3. Medical & Handwriting Context: Apply medical billing context to fix poor handwriting and OCR errors. 
+           - Correct "Nac dressing" to "VAC dressing".
+           - Correct "Deductions chages" or "Ductus" to "Doctor charges".
+           - Correct "Cathetriz" to "Catheterization charges".
+           - Correct "Surgical nursig" to "Surgical nursing".
+           - Recognize standard terms like "O.T. charges", "Ward charges", "Monitor charges", and "Hosp. biomedical waste".
+        4. Clean Line Items: Remove stray marks, squiggles, or circled numbers (like ①, ②, ③) from the item descriptions. Keep the 'name' field clean, professional, and readable.
+        5. Mathematical Fidelity: Extract the exact numeric price for every single line item exactly as written. Ensure the quantity is 1 unless explicitly stated otherwise.`;
+
+        if (customInstructions) {
+            prompt += `\n\nUSER'S ADDITIONAL INSTRUCTIONS: Pay close attention to this explicit user request and override the image data if necessary: "${customInstructions}"`;
+        }
+
+        const response = await ai.models.generateContent({
+            // Flash models are extremely fast and cheap for multimodal image tasks
+            model: "gemini-2.5-flash", 
+            contents: [
+                {
+                    role: "user",
+                    parts: [
+                        { text: prompt },
+                        {
+                            inlineData: {
+                                data: imageBase64,
+                                mimeType: mimeType
+                            }
+                        }
+                    ]
+                }
+            ],
+            config: {
+                responseMimeType: "application/json",
+                // Forcing the strict schema so it matches your React formData perfectly
+                responseSchema: {
+                    type: "OBJECT",
+                    properties: {
+                        invoiceNumber: { type: "STRING" },
+                        invoiceDate: { type: "STRING" },
+                        dueDate: { type: "STRING" },
+                        clientName: { type: "STRING" },
+                        email: { type: "STRING" },
+                        address: { type: "STRING" },
+                        items: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    name: { type: "STRING" },
+                                    quantity: { type: "NUMBER" },
+                                    unitPrice: { type: "NUMBER" },
+                                    tax: { type: "NUMBER" }
+                                }
+                            }
+                        },
+                        notes: { type: "STRING" },
+                        paymentTerms: { type: "STRING" }
+                    }
+                }
+            }
+        });
+        
+        const parsedJson = JSON.parse(response.text);
+        res.json({ data: parsedJson });
+
+    } catch (error) {
+        console.error("🔥 AI IMAGE PARSE ERROR:", error);
+        res.status(500).json({ message: "Failed to parse image", errorDetails: error.message });
+    }
+};
+
+// ==========================================
+// 3. GENERATE REMINDER EMAIL
 // ==========================================
 export const generateReminderEmail = async (req, res) => {
     try {
@@ -91,7 +180,7 @@ export const generateReminderEmail = async (req, res) => {
         Keep the tone friendly but professional. Do not include a subject line, just provide the email body.`;
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash-lite",
+            model: "gemini-2.5-flash",
             contents: prompt,
         });  
         
@@ -106,7 +195,7 @@ export const generateReminderEmail = async (req, res) => {
 };
 
 // ==========================================
-// 3. GET DASHBOARD SUMMARY (Math Only, No AI needed)
+// 4. GET DASHBOARD SUMMARY (Math Only, No AI needed)
 // ==========================================
 export const getDashboardSummary = async (req, res) => {
     try {
