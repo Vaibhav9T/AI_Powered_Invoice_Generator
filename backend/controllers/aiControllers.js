@@ -14,42 +14,46 @@ export const parseInvoiceFormatText = async (req, res) => {
         const { invoiceText } = req.body;
         
         if (!invoiceText) {
+            console.log("🔥 No invoice text provided in request body");
             return res.status(400).json({ message: "Please provide invoice text" });
         }
         
         const prompt = `You are an expert invoice data extraction AI. Analyze the following text and extract the relevant invoice details. 
-            Format the extracted data strictly as a JSON object. Text to analyze: "${invoiceText}"
-            
-            The output MUST be a valid JSON object with exactly this structure:
+    Format the extracted data strictly as a JSON object. Text to analyze: "${invoiceText}"
+    
+    The output MUST be a valid JSON object with exactly this structure:
+    {
+        "invoiceNumber": "string",
+        "invoiceDate": "YYYY-MM-DD",
+        "dueDate": "YYYY-MM-DD",
+        "clientName": "string",    
+        "email": "string",         
+        "address": "string",       
+        "items": [
             {
-                "invoiceNumber": "string",
-                "invoiceDate": "YYYY-MM-DD",
-                "dueDate": "YYYY-MM-DD",
-                "billFrom": "string",
-                "billTo": "string",
-                "items": [
-                    {
-                        "description": "string",
-                        "quantity": number,
-                        "unitPrice": number
-                    }
-                ],
-                "notes": "string",
-                "paymentTerms": "string"
-            }`;
+                "name": "string",  
+                "quantity": number,
+                "unitPrice": number,
+                "tax": 0           
+            }
+        ],
+        "notes": "string",
+        "paymentTerms": "string"
+    }`;
 
-        // Using the correct syntax for the new GoogleGenAI SDK
+        // 🔥 THE FIX: Use config to force pure JSON output
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash-lite",
             contents: prompt,
+            config: {
+                responseMimeType: "application/json", // This prevents the AI from adding any conversational text or markdown blocks
+            }
         });
         
         const extractedText = response.text;
         
-        // Gemini often wraps JSON in markdown blocks (```json ... ```).
-        // We must strip those out before parsing, otherwise JSON.parse crashes!
-        const cleanedData = extractedText.replace(/```json\n?|```/g, '').trim();
-        const parsedJson = JSON.parse(cleanedData);
+        // Because we used responseMimeType, we don't need messy regex replacements anymore!
+        const parsedJson = JSON.parse(extractedText);
 
         res.json({ data: parsedJson });
 
