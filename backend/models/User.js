@@ -18,11 +18,14 @@ const userSchema = new mongoose.Schema({
         minlength: 6,
         select: false
     },
+    
     businessName: { type: String, default: '' },
     address: { type: String, default: '' },
     phone: { type: String, default: '' },
     taxId: { type: String, default: '' },
-}, { timestamps: true });
+}, { timestamps: true,
+    strict: false 
+ });
 
 
 // 1. Modern Async pre-save hook (No 'next' required!)
