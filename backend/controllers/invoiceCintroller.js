@@ -1,5 +1,23 @@
 import Invoice from '../models/Invoice.js';
 
+const normalizeNumber = (value) => {
+    if (typeof value === "number" && Number.isFinite(value)) {
+        return value;
+    }
+
+    if (typeof value !== "string") {
+        return 0;
+    }
+
+    const cleaned = value.replace(/[^0-9.-]/g, "");
+    if (!cleaned || cleaned === "-" || cleaned === "." || cleaned === "-.") {
+        return 0;
+    }
+
+    const parsed = Number(cleaned);
+    return Number.isFinite(parsed) ? parsed : 0;
+};
+
 // ==========================================
 // 1. GENERATE INVOICE VIA AI (Placeholder)
 // ==========================================
@@ -55,17 +73,20 @@ export const createInvoice = async (req, res) => {
 
         // SMART FIX: Map items to calculate 'total' per item and ensure 'unitPrice' is used for Mongoose
         const formattedItems = items.map(item => {
-            const itemPrice = item.unitPrice || item.price || 0;
-            const lineItemTotal = item.quantity * itemPrice;
+            const quantity = normalizeNumber(item.quantity);
+            const itemPrice = normalizeNumber(item.unitPrice || item.price || 0);
+            const lineItemTotal = quantity * itemPrice;
+            const itemTaxRate = normalizeNumber(item.taxRate || item.tax || 0);
 
             subtotal += lineItemTotal;
-            taxTotal += lineItemTotal * (item.taxRate || 0) / 100;
+            taxTotal += lineItemTotal * itemTaxRate / 100;
 
             return {
-                description: item.description,
-                quantity: item.quantity,
+                name: item.name || item.description,
+                description: item.description || item.name,
+                quantity,
                 unitPrice: itemPrice, 
-                taxRate: item.taxRate || 0,
+                taxRate: itemTaxRate,
                 total: lineItemTotal  
             };
         });
@@ -136,6 +157,37 @@ export const updateInvoice = async (req, res) => {
         let invoice = await Invoice.findById(req.params.id);
         
         if (invoice && invoice.user.toString() === req.user.id) {
+            
+            // Re-calculate totals and ensure items have description & taxRate mapped
+            if (req.body.items) {
+                let subtotal = 0;
+                let taxTotal = 0;
+
+                req.body.items = req.body.items.map(item => {
+                    const quantity = normalizeNumber(item.quantity);
+                    const itemPrice = normalizeNumber(item.unitPrice || item.price || 0);
+                    const lineItemTotal = quantity * itemPrice;
+                    const itemTaxRate = normalizeNumber(item.taxRate || item.tax || 0);
+
+                    subtotal += lineItemTotal;
+                    taxTotal += lineItemTotal * itemTaxRate / 100;
+
+                    return {
+                        ...item,
+                        name: item.name || item.description,
+                        description: item.description || item.name,
+                        quantity,
+                        unitPrice: itemPrice,
+                        taxRate: itemTaxRate,
+                        total: lineItemTotal
+                    };
+                });
+
+                req.body.subtotal = subtotal;
+                req.body.taxTotal = taxTotal;
+                req.body.total = subtotal + taxTotal;
+            }
+
             // Using findByIdAndUpdate is much safer and cleaner for updating full documents
             const updatedInvoice = await Invoice.findByIdAndUpdate(
                 req.params.id,
@@ -172,4 +224,3 @@ export const deleteInvoice = async (req, res) => {
         res.status(500).json({ message: "Server error", errorDetails: error.message });
     }
 };
-
