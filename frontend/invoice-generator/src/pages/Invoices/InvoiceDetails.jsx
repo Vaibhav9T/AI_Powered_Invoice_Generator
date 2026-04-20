@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Printer, Edit, Mail, Loader2 } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInstance';
-import toast from 'react-hot-toast';
+import toast from 'react-hot-toast'; 
 
 const InvoiceDetail = () => {
   const { id } = useParams();
@@ -67,6 +67,7 @@ const InvoiceDetail = () => {
       minimumFractionDigits: 2
     }).format(amount || 0); // Added '|| 0' as a safety net for empty dashboards
   };
+
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -182,7 +183,7 @@ const InvoiceDetail = () => {
 
                   return (
                     <tr key={index}>
-                      <td className="py-4 px-4 text-slate-800 dark:text-slate-200 font-medium">{item.description || item.name || 'Service'}</td>
+                      <td className="py-4 px-4 text-slate-800 dark:text-slate-200 font-medium">{ item.name || item.description || 'Service'}</td>
                       <td className="py-4 px-4 text-slate-600 dark:text-slate-400 text-center">{item.quantity}</td>
                       <td className="py-4 px-4 text-slate-600 dark:text-slate-400 text-right">{formatCurrency(item.unitPrice || 0)}</td>
                       <td className="py-4 px-4 text-slate-600 dark:text-slate-400 text-center">{item.taxRate || item.tax || 0}%</td>

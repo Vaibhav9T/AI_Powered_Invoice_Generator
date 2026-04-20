@@ -6,6 +6,44 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_API_KEY
 });
 
+const normalizeNumber = (value) => {
+    if (typeof value === "number" && Number.isFinite(value)) {
+        return value;
+    }
+
+    if (typeof value !== "string") {
+        return 0;
+    }
+
+    const cleaned = value.replace(/[^0-9.-]/g, "");
+    if (!cleaned || cleaned === "-" || cleaned === "." || cleaned === "-.") {
+        return 0;
+    }
+
+    const parsed = Number(cleaned);
+    return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const scrubAiInvoiceData = (data) => {
+    const items = Array.isArray(data?.items) ? data.items : [];
+
+    return {
+        ...data,
+        items: items.map((item) => {
+            const rawUnitPrice = item?.unitPrice ?? item?.price ?? item?.rate;
+            const rawTax = item?.tax ?? item?.taxRate;
+
+            return {
+                ...item,
+                name: item?.name || item?.description || item?.itemName || "Extracted Item",
+                quantity: normalizeNumber(item?.quantity),
+                unitPrice: normalizeNumber(rawUnitPrice),
+                tax: normalizeNumber(rawTax)
+            };
+        })
+    };
+};
+
 // ==========================================
 // 1. PARSE TEXT INTO INVOICE JSON
 // ==========================================
@@ -14,7 +52,6 @@ export const parseInvoiceFormatText = async (req, res) => {
         const { invoiceText } = req.body;
         
         if (!invoiceText) {
-            console.log("🔥 No invoice text provided in request body");
             return res.status(400).json({ message: "Please provide invoice text" });
         }
         
@@ -39,22 +76,23 @@ export const parseInvoiceFormatText = async (req, res) => {
         ],
         "notes": "string",
         "paymentTerms": "string"
-    }`;
+    }
 
-        // 🔥 THE FIX: Use config to force pure JSON output
+    PRICING RULES:
+    - Extract numbers exactly as written; do not infer or guess missing digits.
+    - Use digits only (no commas or currency symbols).
+    - If a numeric value is unclear, set it to 0.
+    - Do not compute totals; only extract the values present.`;
+
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash", // Flash models are optimized for structured data tasks like this
+            model: "gemini-2.5-flash-lite", 
             contents: prompt,
             config: {
-                responseMimeType: "application/json", // This prevents the AI from adding any conversational text or markdown blocks
+                responseMimeType: "application/json", 
             }
         });
         
-        const extractedText = response.text;
-        
-        // Because we used responseMimeType, we don't need messy regex replacements anymore!
-        const parsedJson = JSON.parse(extractedText);
-
+        const parsedJson = scrubAiInvoiceData(JSON.parse(response.text));
         res.json({ data: parsedJson });
 
     } catch (error) {
@@ -63,10 +101,8 @@ export const parseInvoiceFormatText = async (req, res) => {
     }
 };
 
-// controllers/aiController.js
-
 // ==========================================
-// 2 NEW: PARSE INVOICE FROM IMAGE
+// 2. PARSE INVOICE FROM IMAGE
 // ==========================================
 export const parseInvoiceFromImage = async (req, res) => {
     try {
@@ -76,28 +112,27 @@ export const parseInvoiceFromImage = async (req, res) => {
             return res.status(400).json({ message: "Please provide an image" });
         }
         
-        const prompt = `You are an expert AI data extraction engine specializing in complex, messy, handwritten, and multilingual Indian invoices and hospital bills. 
-        Your task is to analyze the uploaded image and extract the billing details strictly matching the provided JSON schema.
+        const trimmedInstructions = typeof customInstructions === "string" ? customInstructions.trim() : "";
 
-        CRITICAL EXTRACTION RULES:
-        1. Multilingual Names (CRITICAL): Look carefully at the top of the bill for the patient or client name. If the name is written in Devanagari script (Marathi/Hindi, e.g., "प्रशांत शेळके"), you MUST transliterate it accurately into English (e.g., "Prashant Shelke") and place it in the 'clientName' field.
-        2. Invoice Number vs. Date: Do not confuse dates with invoice numbers. If a field says "Date: 12/1/2026", format it and put it in 'invoiceDate'. If there is no explicit invoice or receipt number, leave 'invoiceNumber' as an empty string. Do not force a date into the invoice number field.
-        3. Medical & Handwriting Context: Apply medical billing context to fix poor handwriting and OCR errors. 
-           - Correct "Nac dressing" to "VAC dressing".
-           - Correct "Deductions chages" or "Ductus" to "Doctor charges".
-           - Correct "Cathetriz" to "Catheterization charges".
-           - Correct "Surgical nursig" to "Surgical nursing".
-           - Recognize standard terms like "O.T. charges", "Ward charges", "Monitor charges", and "Hosp. biomedical waste".
-        4. Clean Line Items: Remove stray marks, squiggles, or circled numbers (like ①, ②, ③) from the item descriptions. Keep the 'name' field clean, professional, and readable.
-        5. Mathematical Fidelity: Extract the exact numeric price for every single line item exactly as written. Ensure the quantity is 1 unless explicitly stated otherwise.`;
+        // 🔥 THE FIX: A highly specialized, ironclad prompt for handwritten Indian Bills
+        let prompt = `
+You are an expert financial AI reading handwritten and printed Indian medical/business invoices. Your ONLY output must be a valid JSON object matching the provided schema.
 
-        if (customInstructions) {
-            prompt += `\n\nUSER'S ADDITIONAL INSTRUCTIONS: Pay close attention to this explicit user request and override the image data if necessary: "${customInstructions}"`;
+CRITICAL RULES FOR ACCURACY (STRICT COMPLIANCE REQUIRED):
+1. TRANSLATE NAMES: Look for handwritten names at the top (e.g., 'प्रशांत शेळके'). Translate/Transliterate them into English (e.g., "Prashant Shelke") and assign it to "clientName".
+2. ITEM NAMES (PARTICULARS): Read the 'Particulars' or 'विवरण' column exactly. Write out the handwritten names (e.g., "Ward charges", "Nursing charges", "Doctor charges"). NEVER output generic words like "Service" or "Item". If you cannot read it perfectly, make your best guess based on medical context.
+3. IGNORE COMMAS IN NUMBERS: Indian formatting uses commas uniquely (e.g., 1,03,900). A comma is NOT a decimal and NOT the number 3. Remove ALL commas before returning a number. 1,03,900 must become 103900.
+4. DOCTOR CHARGES / FINAL ITEM: Be careful with the last item before the total. In many bills, the last item is "Doctor charges". Do NOT confuse the total amount with the last item's amount. 
+5. RATE vs AMOUNT: If 'Quantity' is blank or '-', treat the 'Amount' as the 'unitPrice'.
+6. NO MATH: Do not calculate the total. Only extract the exact raw numbers written in the rows.
+`;
+
+        if (trimmedInstructions) {
+            prompt += `\n\nUSER'S ADDITIONAL INSTRUCTIONS (Follow these carefully!): "${trimmedInstructions}"`;
         }
 
         const response = await ai.models.generateContent({
-            // Flash models are extremely fast and cheap for multimodal image tasks
-            model: "gemini-2.5-flash", 
+            model: "gemini-2.5-flash-lite", 
             contents: [
                 {
                     role: "user",
@@ -114,7 +149,6 @@ export const parseInvoiceFromImage = async (req, res) => {
             ],
             config: {
                 responseMimeType: "application/json",
-                // Forcing the strict schema so it matches your React formData perfectly
                 responseSchema: {
                     type: "OBJECT",
                     properties: {
@@ -143,7 +177,20 @@ export const parseInvoiceFromImage = async (req, res) => {
             }
         });
         
-        const parsedJson = JSON.parse(response.text);
+        const parsedJson = scrubAiInvoiceData(JSON.parse(response.text));
+
+        // Cleanup notes if they just parrot the user prompt
+        if (trimmedInstructions && typeof parsedJson.notes === "string") {
+            const normalizedNotes = parsedJson.notes.trim().toLowerCase();
+            const normalizedPrompt = trimmedInstructions.toLowerCase();
+            const minMatchLength = 12;
+            const notesContainPrompt = normalizedPrompt.length >= minMatchLength && normalizedNotes.includes(normalizedPrompt);
+            const promptContainsNotes = normalizedNotes.length >= minMatchLength && normalizedPrompt.includes(normalizedNotes);
+
+            if (normalizedNotes === normalizedPrompt || notesContainPrompt || promptContainsNotes) {
+                parsedJson.notes = "";
+            }
+        }
         res.json({ data: parsedJson });
 
     } catch (error) {
@@ -158,7 +205,6 @@ export const parseInvoiceFromImage = async (req, res) => {
 export const generateReminderEmail = async (req, res) => {
     try {
         const { invoiceId } = req.body;
-        console.log("🔥 BACKEND HIT! Looking for Invoice ID:", req.body.invoiceId);
         if (!invoiceId) {
             return res.status(400).json({ message: "Invoice ID is required" });
         }
@@ -169,7 +215,6 @@ export const generateReminderEmail = async (req, res) => {
             return res.status(404).json({ message: "Invoice not found" });
         }   
 
-        // Fixed the prompt so it actually asks for an email using the database info
         const prompt = `You are a professional accountant. Write a polite, concise reminder email to a client for an unpaid invoice. 
         Here are the details:
         - Invoice Number: ${invoice.invoiceNumber}
@@ -180,12 +225,11 @@ export const generateReminderEmail = async (req, res) => {
         Keep the tone friendly but professional. Do not include a subject line, just provide the email body.`;
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-2.5-flash-lite",
             contents: prompt,
         });  
         
         const reminderEmail = response.text;
-        
         res.json({ reminderEmail });
 
     } catch (error) {
@@ -195,7 +239,7 @@ export const generateReminderEmail = async (req, res) => {
 };
 
 // ==========================================
-// 4. GET DASHBOARD SUMMARY (Math Only, No AI needed)
+// 4. GET DASHBOARD SUMMARY
 // ==========================================
 export const getDashboardSummary = async (req, res) => {
     try {
@@ -205,13 +249,11 @@ export const getDashboardSummary = async (req, res) => {
             return res.status(400).json({ message: "User ID is required" });
         }
 
-        // Removed the unused AI prompt that was crashing the function
         const invoices = await Invoice.find({ user: userId });
         
         const totalInvoices = invoices.length;
         const totalRevenue = invoices.reduce((acc, invoice) => acc + invoice.total, 0);
         
-        // Calculate overdue invoices by comparing the due date to today
         const today = new Date();
         const overdueInvoices = invoices.filter(invoice => {
             return new Date(invoice.dueDate) < today && invoice.status !== 'Paid';
