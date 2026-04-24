@@ -219,7 +219,7 @@ export const generateReminderEmail = async (req, res) => {
         Here are the details:
         - Invoice Number: ${invoice.invoiceNumber}
         - Client Name/Address: ${invoice.billTo}
-        - Total Amount Due: $${invoice.total}
+        - Total Amount Due: ₹${invoice.total}
         - Due Date: ${new Date(invoice.dueDate).toLocaleDateString()}
         
         Keep the tone friendly but professional. Do not include a subject line, just provide the email body.`;
@@ -293,7 +293,7 @@ export const cloneTemplateFromImage = async (req, res) => {
 
         const response = await ai.models.generateContent({
             // Switching back to Flash-Lite for instant 1-second responses
-            model: "gemini-1.5-flash", 
+            model: "gemini-2.5-flash-lite", 
             contents: [
                 {
                     role: "user",
