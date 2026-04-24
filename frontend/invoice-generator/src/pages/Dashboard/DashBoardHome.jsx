@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FileText, IndianRupee } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInstance';
 import AIInsights from '../../components/AIInsights.jsx';
 import { API_PATHS } from '../../utils/apiPaths.js';
 import { useAuth } from '../../context/AuthContext'; // 🔥 Added Auth Context to get user name
+
 
 const DashboardHome = () => {
   const { user } = useAuth(); // 🔥 Get the user here!
@@ -83,7 +84,9 @@ const DashboardHome = () => {
           Here's your invoice overview.
         </p>
       </div>
-
+      <div>
+        
+      </div>
       {/* ================= METRIC CARDS ================= */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         

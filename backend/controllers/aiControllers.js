@@ -266,3 +266,52 @@ export const getDashboardSummary = async (req, res) => {
         res.status(500).json({ message: "Failed to get dashboard summary", errorDetails: error.message });
     }
 };
+
+
+
+export const cloneTemplateFromImage = async (req, res) => {
+    try {
+        const { imageBase64, mimeType } = req.body;
+        
+        if (!imageBase64) return res.status(400).json({ message: "Please provide an image" });
+
+        const prompt = `
+        You are an expert UI/UX designer. Analyze the uploaded invoice image and extract its core design system.
+        Return ONLY a strict JSON object matching this schema.
+        
+        RULES:
+        1. themeColor: Find the dominant primary color used for headings, borders, or the logo. Return it as a HEX code (e.g., "#1E3A8A").
+        2. fontFamily: Guess the closest CSS font family. Output strictly one of these three strings: "font-sans", "font-serif", or "font-mono".
+        3. layoutStyle: Where is the main company logo or header text aligned? Output strictly one of these three strings: "left", "center", or "right".
+        
+        {
+            "themeColor": "#HEXCODE",
+            "fontFamily": "font-sans",
+            "layoutStyle": "left"
+        }
+        `;
+
+        const response = await ai.models.generateContent({
+            // Switching back to Flash-Lite for instant 1-second responses
+            model: "gemini-1.5-flash", 
+            contents: [
+                {
+                    role: "user",
+                    parts: [
+                        { text: prompt },
+                        { inlineData: { data: imageBase64, mimeType: mimeType } }
+                    ]
+                }
+            ],
+            config: {
+                responseMimeType: "application/json"
+            }
+        });
+        
+        res.json({ data: JSON.parse(response.text) });
+
+    } catch (error) {
+        console.error("🔥 AI TEMPLATE CLONE ERROR:", error);
+        res.status(500).json({ message: "Failed to clone template design." });
+    }
+};

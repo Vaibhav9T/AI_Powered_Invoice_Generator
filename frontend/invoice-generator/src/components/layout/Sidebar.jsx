@@ -7,6 +7,7 @@ import {
   User, 
   LogOut,
   BriefcaseBusiness,
+  LayoutTemplate,
   X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -32,6 +33,7 @@ const Sidebar = ({ onClose }) => {
     { name: 'Invoices', path: '/invoices', icon: <FileText size={20} /> },
     { name: 'Create Invoice', path: '/invoices/new', icon: <Plus size={20} /> },
     { name: 'Profile', path: '/profile', icon: <User size={20} /> },
+    { name: 'Templates', path: '/templates', icon: <LayoutTemplate size={20} /> },
   ];
 
   return (

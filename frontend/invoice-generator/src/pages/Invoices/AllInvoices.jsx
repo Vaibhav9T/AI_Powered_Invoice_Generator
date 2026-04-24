@@ -77,6 +77,15 @@ const AllInvoices = () => {
     return matchesSearch && matchesStatus;
   });
 
+    // --- Currency Formatting ---
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2
+    }).format(amount || 0); // Added '|| 0' as a safety net for empty dashboards
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 relative">
       
@@ -196,7 +205,7 @@ const AllInvoices = () => {
                         {clientName}
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-slate-200">
-                        ${safeTotal.toFixed(2)} {/* Remember to change this to formatCurrency if you want Rupees here too! */}
+                        {formatCurrency(safeTotal)}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                         {formattedDate}

@@ -22,6 +22,7 @@ export const API_PATHS = {
     PARSE_IMAGE: `${API_BASE_URL}/ai/parse-image`,
     REMINDER: `${API_BASE_URL}/ai/reminder`,
     DASHBOARD: `${API_BASE_URL}/ai/dashboard`,
+   CLONE_TEMPLATE: `${API_BASE_URL}/ai/clone-template`
 },
 
  USER_API : {
