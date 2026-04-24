@@ -6,10 +6,10 @@ import { ArrowRight } from 'lucide-react';
 
 const Features = () => {
   return (
-    <div className="relative transition-colors duration-300 z-10">
+    <div className="relative transition-colors duration-300 z-10 ">
        {/* Features Section */}
         <section id="Features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-16 shadow-xl border border-white/50 dark:border-slate-700/50 transition-colors duration-300">
+          <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-16 shadow-xl border border-white/50 dark:border-slate-700/50 transition-colors duration-300 ">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">
                 Why Choose Our AI Invoice Generator?
@@ -20,9 +20,9 @@ const Features = () => {
             </div>
 
             
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5'>
               {FEATURES.map((feature, index) => (
-                <div key={index} className="group bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 dark:border-slate-700/50">
+                <div key={index} className="group bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 dark:border-slate-700/50">
                 <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <feature.icon className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                 </div>

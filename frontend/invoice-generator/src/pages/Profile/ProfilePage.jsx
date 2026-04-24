@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
-  User, Building, Mail, Phone, Shield, Camera, Loader2, Save, Edit3
+  User, Building, Mail, Phone, Shield, Camera, Loader2, Save, Edit3, LayoutTemplate, Palette, Type
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../utils/axiosInstance';
 import toast from 'react-hot-toast';
 
 const ProfilePage = () => {
-  const { user, updateUser } = useAuth(); // We keep this just in case, but rely on DB for form data
+  const { user, updateUser } = useAuth(); 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,35 +23,47 @@ const ProfilePage = () => {
     taxId: '',
   });
 
-  // 1. Fetch fresh data straight from the database when the page loads!
+  // 🔥 NEW: State to hold the user's saved Master Template
+  const [myTemplate, setMyTemplate] = useState(null);
+
+  // 1. Fetch fresh Profile AND Template data straight from the database!
   useEffect(() => {
-    const fetchProfileData = async () => {
+    const fetchProfileAndTemplate = async () => {
       try {
         setIsLoading(true);
-        const response = await axiosInstance.get('/auth/me');
-
-        const dbUser = response.data;
         
-        // Populate the form with the actual database information
-       if (response.data && response.data.user) {
-            setFormData({
-                name: response.data.user.name || '',
-                email: response.data.user.email || '',
-                businessName: response.data.user.businessName || '',
-                phone: response.data.user.phone || '',
-                address: response.data.user.address || '',
-                taxId: response.data.user.taxId || '',
-            });
-          }
+        // Fetch both concurrently for speed
+        const [profileRes, templateRes] = await Promise.all([
+          axiosInstance.get('/auth/me'),
+          axiosInstance.get('/templates').catch(() => ({ data: { data: null } }))
+        ]);
+
+        // Populate Profile Form
+        if (profileRes.data && profileRes.data.user) {
+          setFormData({
+              name: profileRes.data.user.name || '',
+              email: profileRes.data.user.email || '',
+              businessName: profileRes.data.user.businessName || '',
+              phone: profileRes.data.user.phone || '',
+              address: profileRes.data.user.address || '',
+              taxId: profileRes.data.user.taxId || '',
+          });
+        }
+
+        // Populate Template Data
+        if (templateRes.data && templateRes.data.data) {
+          setMyTemplate(templateRes.data.data);
+        }
+
       } catch (error) {
-        console.error("Error fetching profile from DB:", error);
+        console.error("Error fetching data from DB:", error);
         toast.error("Failed to load profile data.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchProfileData();
+    fetchProfileAndTemplate();
   }, []);
 
   const handleInputChange = (e) => {
@@ -62,15 +75,13 @@ const ProfilePage = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Send the updated data to the backend
       const response = await axiosInstance.put('/auth/profile', formData);
       
       updateUser(response.data.user);
       toast.success('Profile updated successfully!');
       setIsEditing(false);
       
-      // Sync our form with what the database confirmed was saved
-      const updatedUser = response.data;
+      const updatedUser = response.data.user;
       setFormData({
         name: updatedUser.name || '',
         email: updatedUser.email || '',
@@ -166,7 +177,7 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Right Column: Form Fields */}
+        {/* Right Column: Form Fields & Templates */}
         <div className="lg:col-span-2 space-y-6">
           
           {/* Personal Info Card */}
@@ -184,7 +195,7 @@ const ProfilePage = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 dark:disabled:bg-slate-800/50 disabled:text-slate-500 dark:disabled:text-slate-500 transition-colors"
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 dark:disabled:bg-slate-800/50 disabled:text-slate-500 transition-colors"
                 />
               </div>
               <div className="space-y-1.5">
@@ -244,18 +255,57 @@ const ProfilePage = () => {
                   className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 dark:disabled:bg-slate-800/50 disabled:text-slate-500 transition-colors resize-none"
                 />
               </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors">Tax ID / VAT Number</label>
-                <input
-                  type="text"
-                  name="taxId"
-                  value={formData.taxId}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  placeholder="Optional"
-                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 dark:disabled:bg-slate-800/50 disabled:text-slate-500 transition-colors"
-                />
+            </div>
+          </div>
+
+          {/* 🔥 NEW: Master Template Status Card */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden transition-colors">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between transition-colors">
+              <div className="flex items-center gap-2">
+                <LayoutTemplate size={18} className="text-blue-600 dark:text-blue-400" />
+                <h3 className="font-semibold text-slate-800 dark:text-white transition-colors">Master Invoice Template</h3>
               </div>
+              <Link to="/templates" className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline transition-colors">
+                Open Builder
+              </Link>
+            </div>
+            
+            <div className="p-6">
+              {myTemplate ? (
+                <div className="border border-gray-200 dark:border-slate-700 rounded-xl p-5 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  
+                  <div className="space-y-1">
+                    <p className="font-bold text-slate-800 dark:text-white text-lg">{myTemplate.templateName}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1"><Palette size={14}/> {myTemplate.themeColor}</span>
+                      <span className="inline-flex items-center gap-1 ml-2"><Type size={14}/> {myTemplate.fontFamily.replace('font-', '')}</span>
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {/* Visual Color Swatch */}
+                    <div 
+                      className="h-10 w-10 rounded-full shadow-inner border-2 border-white dark:border-slate-800"
+                      style={{ backgroundColor: myTemplate.themeColor }}
+                      title="Theme Color"
+                    />
+                    <div className="text-right">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Status</p>
+                      <p className="text-sm font-medium text-green-600 dark:text-green-400">Active Default</p>
+                    </div>
+                  </div>
+                  
+                </div>
+              ) : (
+                <div className="text-center py-6 border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/30">
+                  <LayoutTemplate size={32} className="mx-auto text-slate-300 dark:text-slate-600 mb-3" />
+                  <p className="text-slate-600 dark:text-slate-300 font-medium mb-1">No Custom Template Saved</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">You are currently using the default standard invoice design.</p>
+                  <Link to="/templates" className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                    Build Custom Template
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 

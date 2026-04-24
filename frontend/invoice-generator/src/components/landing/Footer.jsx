@@ -96,7 +96,6 @@ const Footer = () => {
                     
                     <div className="flex items-center gap-4">
                         
-                    <ThemeToggle />
                       
                     <SocialLink href="https://github.com/vaibhav9t/AI_Powered_Invoice_Generator">
                     <Github className="w-4 h-4 " />

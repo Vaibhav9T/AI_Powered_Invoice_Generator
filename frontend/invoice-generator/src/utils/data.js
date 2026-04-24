@@ -1,10 +1,17 @@
-import { BarChart2, FileText, Mail, Sparkles } from "lucide-react";
+import { BarChart2, Camera, FileText, Mail, Sparkles } from "lucide-react";
 export const FEATURES = [
     {
         icon: Sparkles,
         title: "AI Invoice Creation",
         description:
         "Paste any text, email, or receipt, and let our AI instantly generate a complete, professional invoice for you."
+    },
+
+    {
+        icon: Camera,
+        title: "Image to Invoice",
+        description:
+        "Snap a photo of a receipt or document, and our AI will extract the details to create an accurate invoice.",
     },
 
     {

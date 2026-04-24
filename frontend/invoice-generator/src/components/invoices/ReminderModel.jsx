@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { X, Mail, Loader2, Send } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInstance';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext'; // 🔥 IMPORT ADDED
 
 const ReminderModal = ({ isOpen, onClose, invoiceId }) => {
+  const { user } = useAuth(); // 🔥 GRAB USER PROFILE
   const [emailBody, setEmailBody] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -21,13 +23,32 @@ const ReminderModal = ({ isOpen, onClose, invoiceId }) => {
   const generateDraft = async () => {
     setIsGenerating(true);
     try {
-      // Calling your exact backend AI route!
       const response = await axiosInstance.post('/ai/reminder', { invoiceId });
-      setEmailBody(response.data.reminderEmail);
+      let draft = response.data.reminderEmail;
+
+      // 1. The Vacuum Cleaner: Removes absolutely ANYTHING inside square brackets
+      draft = draft.replace(/\[.*?\]/g, '');
+
+      // 2. Clean up any awkward empty lines left behind by the deleted brackets
+      draft = draft.replace(/\n\s*\n\s*\n/g, '\n\n').trim();
+
+      // 3. Build a beautiful, dynamic signature using ONLY your available profile data
+      // Using .filter(Boolean) automatically removes any fields that are blank!
+      const signatureParts = [
+        user?.name,
+        user?.businessName,
+        user?.phone,
+        user?.email
+      ].filter(Boolean); 
+
+      // 4. Attach it cleanly to the bottom of the email
+      draft += '\n' + signatureParts.join('\n');
+
+      setEmailBody(draft);
     } catch (error) {
       console.error("Failed to generate reminder:", error);
       toast.error("Failed to generate email draft.");
-      onClose(); // Close the modal if it fails
+      onClose(); 
     } finally {
       setIsGenerating(false);
     }

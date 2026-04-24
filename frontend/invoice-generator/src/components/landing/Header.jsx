@@ -4,6 +4,7 @@ import {FileText, Menu, X} from 'lucide-react';
 import ProfileDropdown from "../layout/ProfileDropdown";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../ui/Logo";
+import ThemeToggle from "../layout/ThemeToggle";
 
 const Header = () => {
 const [isScrolled, setIsScrolled] = useState(false);
@@ -86,12 +87,13 @@ useEffect(() => {
               //   </Link>
               // );
             })}
-          </nav>
-
             
+          </nav>
+         
+          
           {/* 3. Action Buttons */}
           <div className="hidden md:flex items-center gap-4">
-           
+             <ThemeToggle />
             {isAuthenticated ?( 
               <ProfileDropdown
               isOpen={profileDropdownOpen}
@@ -124,7 +126,8 @@ useEffect(() => {
           
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex gap-4 items-center">
+             <ThemeToggle />
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none"
@@ -137,9 +140,10 @@ useEffect(() => {
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
+        
         <div className="md:hidden bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 shadow-xl absolute w-full transition-colors duration-300">
+         
           <div className="px-4 pt-2 pb-6 space-y-2">
-
   
               {['Features', 'Testimonials', 'FAQ'].map((item) => {
                 if (item === 'Features') {

@@ -4,7 +4,8 @@ import {
     parseInvoiceFormatText, 
     generateReminderEmail, 
     getDashboardSummary,
-    parseInvoiceFromImage
+    parseInvoiceFromImage,
+    cloneTemplateFromImage
 } from '../controllers/aiControllers.js'; 
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -24,5 +25,8 @@ router.post('/reminder',protect, generateReminderEmail);
 
 // 4. The Dashboard Summary Route (GET request)
 router.get('/dashboard',protect, getDashboardSummary);
+
+// 5. The Clone Template Route (POST request)
+router.post("/clone-template", protect, cloneTemplateFromImage);
 
 export default router;

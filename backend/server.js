@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import templateRoutes from './routes/templateRoutes.js';
 
 // Initialize Express
 const app = express();
@@ -39,6 +40,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/templates', templateRoutes);
 
 // Health Check Route
 app.get('/', (req, res) => {

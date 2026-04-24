@@ -20,6 +20,7 @@ import { AuthProvider } from './context/AuthContext';
 import DashboardHome from './pages/Dashboard/DashBoardHome';
 import EditInvoice from './pages/Invoices/EditInvoice';
 import DashboardLayout from './components/layout/DashboardLayout';
+import TemplateBuilder from './components/invoices/TemplateBuilder';
 
 const App = () => {
   return (
@@ -48,7 +49,7 @@ const App = () => {
               <Route path="invoices/edit/:id" element={<EditInvoice />} />
               <Route path="invoice/:id" element={<InvoiceDetail />} />
               <Route path="profile" element={<ProfilePage />} />
-              
+              <Route path="templates" element={<TemplateBuilder />} />
             </Route>
 
           </Route>
