@@ -10,9 +10,10 @@
 
   <br />
   <p><b>Intelligent Invoicing for Modern Businesses.</b></p>
-  
-  <br />
+
 </div>
+
+##
 
 Ainvoy is a full-stack SaaS platform designed to eliminate the friction of manual billing. By leveraging AI, it allows businesses to scan physical invoices, instantly clone brand designs into dynamic templates, and automate client follow-ups.
 
