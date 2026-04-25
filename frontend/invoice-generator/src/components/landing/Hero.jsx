@@ -1,6 +1,7 @@
 import react from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Logo from '../ui/Logo';
 
 const Hero = () => {
   const { isAuthenticated } = useAuth();
@@ -48,6 +49,7 @@ const Hero = () => {
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-teal-400 rounded-[2rem] blur-xl opacity-30 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
               
               <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-slate-900 border border-slate-700/50 transition-colors duration-300 transform group-hover:-translate-y-2"> 
+                
                 <img 
                   src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1000" 
                   alt="Invoice Preview" 
