@@ -1,8 +1,11 @@
 <div align="center">
   
   <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+    <a href="https://ainvoy.vercel.app/" target="_blank">
     <img src="./frontend/invoice-generator/public/logo/logo-dark.png" alt="Ainvoy Icon" height="45" style="vertical-align: middle;" />
-    <span style="font-size: 56px; font-weight: 800; letter-spacing: 4px; vertical-align: middle; line-height: 1;">AINVOY</span>
+     <span style="margin: 0; padding: 0; line-height: 1; vertical-align: middle;">AINVOY</span>
+    </a>
+    
   </div>
 
   <br />
