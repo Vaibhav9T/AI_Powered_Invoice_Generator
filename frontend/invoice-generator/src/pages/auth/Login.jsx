@@ -112,10 +112,10 @@ const Login = () => {
 
         <div className="max-w-lg px-10 relative z-10 text-center">
           <div className="mx-auto h-20 w-20 bg-blue-900 dark:bg-blue-800 rounded-2xl flex items-center justify-center mb-8 shadow-xl transform hover:scale-105 transition-transform duration-300">
-            <FileText className="h-10 w-10 text-white" />
+            <img src="/logo/logo-dark.png" alt="Ainvoy Logo" className="h-10 w-10" />
           </div>
           <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight leading-tight transition-colors">
-            Welcome Back to<br/><span className="text-blue-900 dark:text-blue-400">InvoiceAI</span>
+            Welcome Back to<br/><span className="text-blue-900 dark:text-blue-400">AINVOY</span>
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 leading-relaxed transition-colors">
             Log in to continue managing your invoices and getting paid faster.

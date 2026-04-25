@@ -48,7 +48,7 @@ const Footer = () => {
                     <div className="space-y-4 md:col-span-2 lg:col-span-1">
                     <Link to="/LandingPage" className="flex items-center space-x-2 mb-6">
                     <div className="[&_span]:text-white">
-                      <Logo />
+                      <Logo imgFixed={true} />
                     </div>
                     </Link>
                     <p className="text-slate-400 leading-relaxed max-w-sm text-sm">
