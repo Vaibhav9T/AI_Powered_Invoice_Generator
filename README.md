@@ -1,90 +1,98 @@
-# AI-Powered Invoice Generator (AINVOY)
+<div align="center">
+  
+  <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+    <img src="./frontend/invoice-generator/public/logo/logo-dark.png" alt="Ainvoy Icon" height="45" style="vertical-align: middle;" />
+    <span style="font-size: 56px; font-weight: 800; letter-spacing: 4px; vertical-align: middle; line-height: 1;">AINVOY</span>
+  </div>
 
-A minimal React + Vite frontend for an AI-powered invoice generator. This repository contains a frontend scaffold (React + Vite + Tailwind) and a placeholder backend directory for server/API code.
+  <br />
+  <p><b>Intelligent Invoicing for Modern Businesses.</b></p>
+  
+  <br />
+</div>
 
-Why this project exists
-- Provides a quick, extendable starting point for building an invoice generator UI with modern tools (React 19, Vite, Tailwind).
-- Organizes common invoice-related pages and components (dashboard, invoices, auth) so you can focus on business logic and AI integration.
+Ainvoy is a full-stack SaaS platform designed to eliminate the friction of manual billing. By leveraging AI, it allows businesses to scan physical invoices, instantly clone brand designs into dynamic templates, and automate client follow-ups.
 
-Key features and benefits
-- Lightweight Vite dev experience ([vite.config.js](frontend/invoice-generator/vite.config.js))
-- Tailwind-ready styling ([src/index.css](frontend/invoice-generator/src/index.css))
-- Route-based layout and protected routes example via [`ProtectedRoute`](frontend/invoice-generator/src/components/auth/ProtectedRoute.jsx)
-- Example pages for quick UI iteration:
-  - [`LandingPage`](frontend/invoice-generator/src/pages/LandingPage/LandingPage.jsx)
-  - [`Login`](frontend/invoice-generator/src/pages/auth/Login.jsx)
-  - [`Signup`](frontend/invoice-generator/src/pages/auth/Signup.jsx)
-  - [`Dashboard`](frontend/invoice-generator/src/pages/Dashboard/Dashboard.jsx)
-  - [`AllInvoices`](frontend/invoice-generator/src/pages/Invoices/AllInvoices.jsx)
-  - [`CreateInvoice`](frontend/invoice-generator/src/pages/Invoices/CreateInvoice.jsx)
-  - [`InvoiceDetails`](frontend/invoice-generator/src/pages/Invoices/InvoiceDetails.jsx)
-  - [`ProfilePage`](frontend/invoice-generator/src/pages/Profile/ProfilePage.jsx)
+<img width="2880" height="1800" alt="image" src="https://github.com/user-attachments/assets/a30bae6e-7ba2-46a0-9632-53d8559d3039" />
+ 
+## ✨ Core Features
 
-Getting started (frontend)
-1. Prerequisites
-   - Node.js (v18+ recommended)
-   - npm or yarn
+* **🤖 AI Invoice Scanner:** Upload a picture of a messy, physical bill, and the Unified AI Scanner extracts the line items, client details, and totals perfectly into the system.
+* **🎨 Intelligent Template Engine:** Users can upload their old invoice design, and Ainvoy's AI automatically extracts the theme colors, typography, and layout, generating a reusable Master Template.
+* **📄 Pixel-Perfect PDF Generation:** Built with a custom print-rendering engine (`react-to-print`) that forces strict A4 dimensions and preserves background graphics for flawless PDF exports.
+* **✉️ Smart Payment Reminders:** Integrated with Gemini AI to instantly draft professional, context-aware payment reminder emails injected with real user and client data.
+* **🌓 Modern UI/UX:** A fully responsive, accessible, and beautifully designed interface with seamless Light/Dark mode toggling.
 
-2. Install dependencies
-```sh
-# from project root or frontend/invoice-generator
-cd frontend/invoice-generator
-npm install
-```
+## 🛠️ Tech Stack
 
-3. Run the dev server
-```sh
-npm run dev
-```
-Open http://localhost:5173 (Vite default) — the app entry is [`src/main.jsx`](frontend/invoice-generator/src/main.jsx) which mounts [`App`](frontend/invoice-generator/src/App.jsx).
+**Frontend:**
+* React.js (Vite)
+* Tailwind CSS v4
+* React Router DOM
+* Lucide React (Icons)
+* React-to-Print
 
-Build and preview
-```sh
-npm run build
-npm run preview
-```
+**Backend & AI:**
+* Node.js & Express.js
+* MongoDB & Mongoose
+* Google Gemini API (2.5 Flash-Lite & Pro models)
+* JSON Web Tokens (JWT) for Authentication
 
-Project structure (frontend)
-- [`frontend/invoice-generator/package.json`](frontend/invoice-generator/package.json) — deps & scripts
-- [`frontend/invoice-generator/vite.config.js`](frontend/invoice-generator/vite.config.js) — Vite + React + Tailwind plugin
-- [`frontend/invoice-generator/src/index.css`](frontend/invoice-generator/src/index.css) — base styles
-- [`frontend/invoice-generator/src/App.jsx`](frontend/invoice-generator/src/App.jsx) — routes and app wiring
-- [`frontend/invoice-generator/src/main.jsx`](frontend/invoice-generator/src/main.jsx) — mount point
-- Components:
-  - [`ProtectedRoute`](frontend/invoice-generator/src/components/auth/ProtectedRoute.jsx)
-  - [`DashboardLayout`](frontend/invoice-generator/src/components/layout/DashboardLayout.jsx)
-- Context:
-  - [`AuthContext`](frontend/invoice-generator/src/context/AuthContext.jsx)
-- Pages: see links above
+## 🚀 Quick Start
 
-Notes & quick tips
-- The current [`ProtectedRoute`](frontend/invoice-generator/src/components/auth/ProtectedRoute.jsx) is a small example; adapt auth logic and imports (e.g., `DashboardLayout`, `memo`) to your needs.
-- Tailwind is configured as a plugin in Vite ([vite.config.js](frontend/invoice-generator/vite.config.js)) — update Tailwind config if you add Tailwind features.
-- The frontend README at [`frontend/invoice-generator/README.md`](frontend/invoice-generator/README.md) contains Vite template notes.
+Follow these steps to run Ainvoy locally on your machine.
 
-Where to get help
-- Open an issue in this repository.
-- Inspect files linked in this README for component examples and routes:
-  - [`App.jsx`](frontend/invoice-generator/src/App.jsx)
-  - [`ProtectedRoute.jsx`](frontend/invoice-generator/src/components/auth/ProtectedRoute.jsx)
-  - [`DashboardLayout.jsx`](frontend/invoice-generator/src/components/layout/DashboardLayout.jsx)
+### Prerequisites
+* Node.js (v18+)
+* MongoDB URI (Local or Atlas)
+* Google Gemini API Key
 
-Maintainers & contributing
-- Maintainers: refer to repository owners or commit history.
-- Contribution guidelines: please follow [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) (create this file if it doesn't exist).
-- Code style: this project includes an ESLint config at [`frontend/invoice-generator/eslint.config.js`](frontend/invoice-generator/eslint.config.js).
+### Installation
 
-License
-- See the repository LICENSE file.
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/your-username/ainvoy.git](https://github.com/your-username/ainvoy.git)
+   cd ainvoy
+   ```
 
-Important links (workspace)
-- [frontend/invoice-generator/package.json](frontend/invoice-generator/package.json)
-- [frontend/invoice-generator/vite.config.js](frontend/invoice-generator/vite.config.js)
-- [frontend/invoice-generator/src/App.jsx](frontend/invoice-generator/src/App.jsx)
-- [frontend/invoice-generator/src/main.jsx](frontend/invoice-generator/src/main.jsx)
-- [frontend/invoice-generator/src/index.css](frontend/invoice-generator/src/index.css)
-- [frontend/invoice-generator/src/components/auth/ProtectedRoute.jsx](frontend/invoice-generator/src/components/auth/ProtectedRoute.jsx)
-- [frontend/invoice-generator/src/components/layout/DashboardLayout.jsx](frontend/invoice-generator/src/components/layout/DashboardLayout.jsx)
-- [frontend/invoice-generator/src/context/AuthContext.jsx](frontend/invoice-generator/src/context/AuthContext.jsx)
-- [frontend/invoice-generator/README.md](frontend/invoice-generator/README.md)
-- [backend/](backend/)
+2. **Install Backend Dependencies:**
+   ```bash
+   cd backend
+   npm install
+   ```
+
+3. **Install Frontend Dependencies:**
+   ```bash
+   cd ../frontend
+   npm install
+   ```
+
+4. **Environment Variables:**
+   Create a `.env` file in your `backend` directory and add the following:
+   ```env
+   PORT=5000
+   MONGO_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
+
+5. **Run the Application:**
+   Open two terminals.
+   
+   *Terminal 1 (Backend):*
+   ```bash
+   cd backend
+   npm run dev
+   ```
+   
+   *Terminal 2 (Frontend):*
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+## 📂 Project Structure
+Ainvoy uses a decoupled architecture, separating the React frontend from the Node.js REST API for scalability and maintainability. The custom AI controller manages all interactions with the Gemini models, while the Template engine handles dynamic styling injections.
+
+## 📄 License
+Copyright © 2026 Vaibhav Annaso Tembukade. All Rights Reserved.
