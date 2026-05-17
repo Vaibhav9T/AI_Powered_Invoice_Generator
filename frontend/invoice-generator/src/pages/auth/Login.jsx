@@ -1,5 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, FileText, ArrowLeft, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Eye, EyeOff, ArrowLeft, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useState, useEffect } from 'react';
 import { API_PATHS } from '../../utils/apiPaths';
@@ -10,26 +10,34 @@ import toast from 'react-hot-toast';
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams(); // 🔥 ADDED: To read the URL for verification success
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
 
-  // 🔥 ADDED: The state to track the checkbox!
   const [rememberMe, setRememberMe] = useState(false);
-  
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
   const [success, setSuccess] = useState('');
   const [isMounted, setIsMounted] = useState(false);
 
+  // Animation mounting effect
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 50);
     return () => clearTimeout(timer);
   }, []);
+
+  // 🔥 ADDED: Catch the user returning from their email verification link
+  useEffect(() => {
+    if (searchParams.get('verified') === 'true') {
+      toast.success("Email verified successfully! You can now log in.", { duration: 5000 });
+      // Clean up the URL so the toast doesn't fire on every page refresh
+      navigate('/login', { replace: true }); 
+    }
+  }, [searchParams, navigate]);
 
   const [fieldErrors, setFieldErrors] = useState({
     email: '',
@@ -75,15 +83,25 @@ const Login = () => {
       const token = response.data.token;
       const user = response.data.user || response.data.userData || response.data.data;
 
-      // 🔥 THE FIX: Pass all THREE variables to the context!
+      // Pass all THREE variables to the context
       login(user, token, rememberMe);
       
       setSuccess('Login successful! Redirecting...');
       setTimeout(() => {
         navigate('/dashboard');
-      }, 2000);
+      }, 1500);
+
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      // 🔥 THE FIX: Catch the unverified 403 error specifically!
+      if (err.response?.status === 403) {
+        const unverifiedMsg = "Account not verified! Please check your email for the verification link.";
+        setError("Please verify your email address.");
+        toast.error(unverifiedMsg, { duration: 6000 });
+      } else {
+        const errorMsg = err.response?.data?.message || 'Login failed. Please try again.';
+        setError(errorMsg);
+        toast.error(errorMsg);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -198,7 +216,6 @@ const Login = () => {
 
             <div className="flex items-center justify-between mt-2">
               <div className="flex items-center">
-                {/* 🔥 THE FIX: The checkbox is now controlled by React state! */}
                 <input
                   id="remember-me"
                   name="remember-me"
