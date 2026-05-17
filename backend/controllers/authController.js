@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import User from '../models/User.js';
+import { sendVerificationEmail } from '../utils/sendEmail.js';
 
 // Helper: Generate JWT
 const generateToken = (id) => {
@@ -22,6 +24,9 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
         
+        // 🔥 Generate a secure random string for the verification token
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+
         const user = new User({ 
             name, 
             email, 
@@ -29,23 +34,24 @@ export const registerUser = async (req, res) => {
             businessName,
             phone,
             address,
-            taxId 
+            taxId,
+            verificationToken // Save the token to the database
         });
+        
         await user.save();
 
         if(user) {
-            // 🔥 THE FIX: Nested user object
-            res.status(201).json({
-                token: generateToken(user._id),
-                user: {
-                    _id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    businessName: user.businessName,
-                    phone: user.phone,
-                    address: user.address,
-                    taxId: user.taxId,
-                }
+            // 🔥 Send the verification email
+            try {
+                await sendVerificationEmail(user.email, verificationToken);
+            } catch (emailError) {
+                console.error("🔥 EMAIL SEND ERROR:", emailError);
+                return res.status(500).json({ message: "User created, but failed to send verification email. Please contact support." });
+            }
+
+            // Return a success message instead of auto-logging them in
+            res.status(201).json({ 
+                message: "Signup successful! Please check your email to verify your account." 
             });
         } else {
             res.status(400).json({ message: "Invalid user data" });
@@ -57,6 +63,33 @@ export const registerUser = async (req, res) => {
     }
 };
 
+// 🔥 NEW: Verify Email Controller
+export const verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.params;
+
+        const user = await User.findOne({ verificationToken: token });
+        
+        if (!user) {
+            return res.status(400).json({ message: "Invalid or expired verification link." });
+        }
+
+        // Mark as verified and wipe the temporary token
+        user.isVerified = true;
+        user.verificationToken = undefined;
+        await user.save();
+
+        // Redirect them back to your React frontend login page!
+        // Using an environment variable for safety when you deploy to Vercel
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        res.redirect(`${frontendUrl}/login?verified=true`);
+
+    } catch (error) {
+        console.error("🔥 VERIFICATION ERROR:", error);
+        res.status(500).json({ message: "Verification failed.", errorDetails: error.message });
+    }
+};
+
 export const loginUser = async (req, res) => {
     const { email, password } = req.body;
     
@@ -64,6 +97,14 @@ export const loginUser = async (req, res) => {
         const user = await User.findOne({ email }).select('+password');
         
         if (user && (await user.matchPassword(password))) {
+            
+            // 🔥 THE FIX: Block unverified users from logging in
+            if (!user.isVerified) {
+                return res.status(403).json({ 
+                    message: "Please verify your email address before logging in." 
+                });
+            }
+
             // 🔥 THE FIX: Nested user object
             res.json({
                 token: generateToken(user._id),

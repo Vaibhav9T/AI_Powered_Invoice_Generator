@@ -1,6 +1,6 @@
-export const API_BASE_URL =  'https://ai-powered-invoice-generator.onrender.com/api'; 
+const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000/api';
+export const API_BASE_URL = backendUrl;
 
-// 'https://ai-powered-invoice-generator.onrender.com/api'  || 'http://localhost:8000/api'
 
 export const API_PATHS = {
  AUTH_API : {

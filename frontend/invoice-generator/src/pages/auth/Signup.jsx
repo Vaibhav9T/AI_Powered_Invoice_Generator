@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, FileText, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { API_PATHS } from '../../utils/apiPaths';
 import axiosInstance from '../../utils/axiosInstance';
@@ -23,7 +23,7 @@ const Signup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(''); // Fixed typo
+  const [success, setSuccess] = useState(''); 
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -182,7 +182,6 @@ const Signup = () => {
     setError('');
     setSuccess('');
 
-    // 🔥 THE FIX: Map frontend formData to match backend expectations exactly
     const payload = {
         name: formData.fullName, 
         email: formData.email,
@@ -193,25 +192,29 @@ const Signup = () => {
         taxId: formData.taxId
     };
     
-    // Debugging: Check your browser console when you click submit!
-    console.log("Frontend payload being sent to backend:", payload);
-
     axiosInstance.post(API_PATHS.AUTH_API.REGISTER, payload)
       .then((response) => {
-        setSuccess('Account created successfully! Redirecting to login...');
+        // 🔥 Use the exact success message from the backend ("Please check your email...")
+        const successMsg = response.data.message || 'Account created! Please check your email to verify.';
+        
+        setSuccess(successMsg);
+        toast.success(successMsg, { duration: 6000 }); // Show a long toast so they read it
+        
+        // Redirect to login page after a short delay
         setTimeout(() => {
           navigate('/login');
-        }, 2000);
+        }, 2500);
       })
       .catch((err) => {
-        setError(err.response?.data?.message || 'Signup failed. Please try again.');
+        const errorMsg = err.response?.data?.message || 'Signup failed. Please try again.';
+        setError(errorMsg);
+        toast.error(errorMsg);
       })
       .finally(() => {
         setIsSubmitting(false);
       });
   };
 
-  // Placeholder function for OAuth login buttons
   const handleOAuthLogin = (provider) => {
     toast.success(`${provider} business login will be implemented soon!`);
   };
@@ -220,11 +223,10 @@ const Signup = () => {
     <div className="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300 flex lg:flex-row-reverse overflow-hidden relative">
       
       {/* =========================================
-          RIGHT PANE - Brand/Marketing Showcase (due to flex-row-reverse)
+          RIGHT PANE - Brand/Marketing Showcase
       ========================================= */}
       <div className={`hidden lg:flex lg:w-[45%] bg-slate-50 dark:bg-slate-900 border-l border-gray-200 dark:border-slate-800 relative flex-col justify-center items-center transition-all duration-700 ease-out transform ${isMounted ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}>
-        {/* Decorative Background Elements */}
-        {/* Back Link */}
+        
         <div className="absolute top-6 left-6 md:top-8 md:left-8 z-10">
           <Link 
             to="/" 
@@ -275,9 +277,6 @@ const Signup = () => {
       ========================================= */}
       <div className={`flex-1 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-12 xl:px-20 bg-white dark:bg-slate-900 relative overflow-y-auto h-screen transition-all duration-700 ease-out transform ${isMounted ? 'translate-x-0 opacity-100' : '-translate-x-8 opacity-0'}`}>
         
-        
-       
-
         <div className="mx-auto w-full max-w-[650px] mt-12 sm:mt-0">
           <div className="mb-8 text-center sm:text-left">
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors">
@@ -329,9 +328,6 @@ const Signup = () => {
 
           <form className="space-y-5" onSubmit={handleSubmit} noValidate>
             
-            {/* =======================
-                ROW 1: Name & Email
-            ======================= */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label htmlFor="fullName" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 transition-colors">
@@ -378,9 +374,6 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* =======================
-                ROW 2: Business & Phone
-            ======================= */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label htmlFor="businessName" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 transition-colors">
@@ -427,9 +420,6 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* =======================
-                ROW 3: Address & Tax ID
-            ======================= */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label htmlFor="address" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 transition-colors">
@@ -468,9 +458,6 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* =======================
-                ROW 4: Passwords
-            ======================= */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 transition-colors">
@@ -543,7 +530,6 @@ const Signup = () => {
             {error && <p className="text-sm text-red-600 dark:text-red-400 text-center font-medium">{error}</p>}
             {success && <p className="text-sm text-green-600 dark:text-green-400 text-center font-medium">{success}</p>}
 
-            {/* Submit Button */}
             <div>
               <button
                 type="submit"

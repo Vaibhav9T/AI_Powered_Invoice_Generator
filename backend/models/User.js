@@ -23,6 +23,15 @@ const userSchema = new mongoose.Schema({
     address: { type: String, default: '' },
     phone: { type: String, default: '' },
     taxId: { type: String, default: '' },
+
+    isVerified: { 
+    type: Boolean, 
+    default: false 
+  },
+  verificationToken: { 
+    type: String 
+  },
+  
 }, { timestamps: true
  });
 
